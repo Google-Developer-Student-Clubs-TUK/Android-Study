@@ -2,12 +2,13 @@ package com.example.toy_proejct.scenarios.home
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
+
+
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,11 +18,33 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.toy_proejct.ui.component.CommonComponent
+
+
+private val productList = listOf("A", "B", "C")
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    //화면에 보여지는 부분을 구성
     Search(viewModel)
+    Column(modifier = Modifier.fillMaxWidth()) {
+        //화면에 보여지는 부분을 구성
+        productList.forEach{ item ->
+            ProductItem(item)
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+        CommonComponent.ButtomNavbar()
+    }
+
+}
+
+
+
+@Composable
+private fun ProductItem(item: String) {
+    Column {
+        Text(text = item)
+    }
 }
 
 @Composable
