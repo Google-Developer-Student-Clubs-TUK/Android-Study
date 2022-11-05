@@ -13,19 +13,11 @@
         android:theme="@style/Theme.Toyproejct"
         tools:targetApi="31">
         <activity
-            android:name=".HomeActivity"
-            android:exported="false"
+            android:name=".scenarios.home.HomeActivity"
+            android:exported="true"
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.Toyproejct">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.Toyproejct">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,6 +27,21 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Toyproejct">
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
+
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
+
+            <!--            <meta-data-->
+            <!--                android:name="android.app.lib_name"-->
+            <!--                android:value="" />-->
         </activity>
     </application>
 
