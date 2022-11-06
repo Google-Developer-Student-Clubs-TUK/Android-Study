@@ -25,6 +25,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.toy_proejct.scenarios.home.data.Item
+import com.example.toy_proejct.scenarios.home.data.getTempItems
 import com.example.toy_proejct.ui.component.CommonComponent
 
 
@@ -71,11 +73,8 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
 
 @Composable
-fun ItemContent(itemList: List<String> = listOf(
-    "맥북",
-    "맥북2",
-    "아이폰14",
-    "아이폰프로")){
+fun ItemContent(itemList: List<Item> = getTempItems()
+){
     Column(modifier = Modifier.padding(12.dp)) {
         LazyColumn{
             items(items = itemList){
@@ -87,7 +86,7 @@ fun ItemContent(itemList: List<String> = listOf(
 }
 
 @Composable
-fun ItemRow(item: String){ //각 상품에 대한 설명
+fun ItemRow(item: Item){ //각 상품에 대한 설명
     Card(modifier = Modifier
         .padding(4.dp)
         .fillMaxWidth()
@@ -95,7 +94,7 @@ fun ItemRow(item: String){ //각 상품에 대한 설명
     shape = RoundedCornerShape(corner = CornerSize(14.dp)),
         elevation = 5.dp) {
         Row(verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start) {
+        horizontalArrangement = Arrangement.Center) {
             Surface(modifier = Modifier
                 .padding(12.dp)
                 .size(100.dp),
@@ -104,7 +103,13 @@ fun ItemRow(item: String){ //각 상품에 대한 설명
                 Icon(imageVector = Icons.Default.AccountBox,
                 contentDescription = "Item Image")
             }
-            Text(text=item)
+                Column(modifier = Modifier.padding(4.dp)) {
+                    Text(text=item.title,
+                        style = MaterialTheme.typography.h6)
+                    Text(text="${item.price} 원",
+                        style = MaterialTheme.typography.caption)
+                }
+
             }
         }
     }
