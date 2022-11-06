@@ -1,6 +1,7 @@
 package com.example.toy_proejct.scenarios.home
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +26,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.transform.RoundedCornersTransformation
 import com.example.toy_proejct.scenarios.home.data.Item
 import com.example.toy_proejct.scenarios.home.data.getTempItems
 import com.example.toy_proejct.ui.component.CommonComponent
@@ -100,8 +105,27 @@ fun ItemRow(item: Item){ //각 상품에 대한 설명
                 .size(100.dp),
                 shape = RectangleShape,
                 elevation = 4.dp){
-                Icon(imageVector = Icons.Default.AccountBox,
-                contentDescription = "Item Image")
+//                Icon(imageVector = Icons.Default.AccountBox,
+//                contentDescription = "Item Image")
+//                Image(painter = rememberImagePainter(item.image_url,
+//                builder = {
+//                    crossfade(true)
+//                    transformations(RoundedCornersTransformation())
+//                }),
+//                contentDescription = "image"
+//                )
+//               Image(
+//                    painter = rememberAsyncImagePainter("https://media.geeksforgeeks.org/wp-content/uploads/20210101144014/gfglogo.png"),
+//                    contentDescription = null,
+//                    modifier = Modifier.size(128.dp)
+//                )
+                AsyncImage(
+                    model = "https://cdn.pixabay.com/photo/2015/10/31/12/54/google-1015751__340.png",
+                    contentDescription = "temp"
+                )
+                //왜 ".png.. .gif등의 확장자가 붙은 이미지url만 화면에 표시되는지..?
+                // 다른 url을 표현하는 방법은 불가능???
+                //https://developer.android.com/jetpack/compose/graphics/images/loading
             }
                 Column(modifier = Modifier.padding(4.dp)) {
                     Text(text=item.title,
