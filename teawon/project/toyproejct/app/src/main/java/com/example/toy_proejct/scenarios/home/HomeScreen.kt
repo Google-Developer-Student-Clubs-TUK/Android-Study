@@ -2,6 +2,10 @@ package com.example.toy_proejct.scenarios.home
 
 import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 
 import androidx.compose.foundation.text.KeyboardActions
@@ -11,9 +15,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -21,22 +28,87 @@ import androidx.compose.ui.unit.dp
 import com.example.toy_proejct.ui.component.CommonComponent
 
 
-private val productList = listOf("A", "B", "C")
+//private val productList = listOf("A", "B", "C")
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    Search(viewModel)
+    Search(viewModel, { ItemContent() })
     Column(modifier = Modifier.fillMaxWidth()) {
         //화면에 보여지는 부분을 구성
-        productList.forEach{ item ->
-            ProductItem(item)
-        }
+//        productList.forEach{ item ->
+//            ProductItem(item)
+//        }
 
         Spacer(modifier = Modifier.weight(1f))
         CommonComponent.ButtomNavbar()
     }
 
 }
+
+//@Composable
+//fun Body(content: @Composable () -> Unit) {
+//    ItemTheme {
+//        val scope = rememberCoroutineScope()
+//        val scaffoldState = rememberScaffoldState()
+//
+//        Scaffold(topBar = {
+//            TopAppBar(backgroundColor = Color.Gray, elevation = 5.dp,
+//                title = { Text(text = "Items") },
+//                navigationIcon = {
+//                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+//                },
+//                actions = {
+//                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorite")
+//                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+//                }
+//            )
+//        }
+//        ) {
+//        content()
+//    }
+//    }
+//}
+
+
+@Composable
+fun ItemContent(itemList: List<String> = listOf(
+    "맥북",
+    "맥북2",
+    "아이폰14",
+    "아이폰프로")){
+    Column(modifier = Modifier.padding(12.dp)) {
+        LazyColumn{
+            items(items = itemList){
+                //Text(text = it)
+                ItemRow(item = it)
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemRow(item: String){ //각 상품에 대한 설명
+    Card(modifier = Modifier
+        .padding(4.dp)
+        .fillMaxWidth()
+        .height(120.dp),
+    shape = RoundedCornerShape(corner = CornerSize(14.dp)),
+        elevation = 5.dp) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start) {
+            Surface(modifier = Modifier
+                .padding(12.dp)
+                .size(100.dp),
+                shape = RectangleShape,
+                elevation = 4.dp){
+                Icon(imageVector = Icons.Default.AccountBox,
+                contentDescription = "Item Image")
+            }
+            Text(text=item)
+            }
+        }
+    }
+
 
 
 
@@ -48,7 +120,7 @@ private fun ProductItem(item: String) {
 }
 
 @Composable
-private fun Search(viewModel: HomeViewModel) {
+private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
     val searchWidgetState by viewModel.searchWidgetState //활성화 여부
     val searchTextState by viewModel.searchTextState // 검색 변수
 
@@ -73,7 +145,9 @@ private fun Search(viewModel: HomeViewModel) {
                 }
             )
         }
-    ) {}
+    ) {
+        content()
+    }
 }
 
 
