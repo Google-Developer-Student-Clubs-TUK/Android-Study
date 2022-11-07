@@ -166,6 +166,7 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 
                 },
                 onSearchClicked = {
+                   // viewModel.searchApi(it)  //코루틴에서만 호출되어야 한다. -?
                     Log.d("Searched Text", it) //검색버튼이 눌리면 특정 함수 실행
                 },
                 onSearchTriggered = {
