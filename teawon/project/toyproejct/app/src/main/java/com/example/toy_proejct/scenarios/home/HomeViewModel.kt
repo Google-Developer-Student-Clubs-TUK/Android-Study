@@ -6,9 +6,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.toy_proejct.LogHelper
+import com.example.toy_proejct.api.getSearchList.GetSearchList
+import com.example.toy_proejct.api.getSearchList.ProductListDto
 import com.example.toy_proejct.scenarios.home.data.Item
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -30,8 +35,8 @@ class HomeViewModel : ViewModel() {
         mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
 
-    private val _itemList : MutableState<List<Item>> = mutableStateOf(listOf());
-    val itemList:State<List<Item>> =_itemList; //화면에 표현될 list
+    private val _itemList : MutableState<List<ProductListDto>> = mutableStateOf(listOf())
+    val itemList:State<List<ProductListDto>> =_itemList; //화면에 표현될 list
 
     fun updateSearchWidgetState(newState: Boolean) { //활성화 여부 변경 함수
         _searchWidgetState.value = newState
@@ -46,22 +51,32 @@ class HomeViewModel : ViewModel() {
 
 
 
-    private val client: HttpClient = HttpClient(CIO)
-
-    suspend fun searchApi(keyword:String): String =
-        withContext(Dispatchers.IO) {
-            val url = "http://3.39.75.19:8080/api/v1/crawler/search/products?word=%EB%A7%A5%EB%B6%81"
-            val response: HttpResponse = client.get(url)
-            val responseStatus = response.status
-            Log.d(TAG, "requestKtorIo: $responseStatus")
-            //값이 정상적으로 받아진다면 json데이터를 파싱하여 itemList값에 넣기
-            if (responseStatus == HttpStatusCode.OK) {
-                response.readText()
-            } else {
-                "error: $responseStatus"
-            }
+    private val client: HttpClient = HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(
+                kotlinx.serialization.json.Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
         }
+    }
+    //사실 이렇게 사용하기보다는 싱글톤으로 묶는게 좋다
+    // Ktor 구버전의 방식 -
 
+    suspend fun searchApi(keyword:String) {
+        withContext(Dispatchers.IO) {
+             kotlin.runCatching {
+                client.get<GetSearchList>("http://3.39.75.19:8080/api/v1/crawler/search/products?word=$keyword")
+            }.onSuccess {
+                _itemList.value = it.productListDtoList
+                LogHelper.print("succses: ${it.productListDtoList.size}")
+            }.onFailure {
+                LogHelper.print("Failure: $it")
+             }
+        }
+    }
 
     //API구현
 }

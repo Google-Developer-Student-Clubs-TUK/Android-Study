@@ -1,14 +1,13 @@
 package com.example.toy_proejct.scenarios.home
 
+import android.content.Intent
 import android.util.Log
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-
-
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -30,26 +30,23 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.transform.RoundedCornersTransformation
+import com.example.toy_proejct.api.getSearchList.ProductListDto
 import com.example.toy_proejct.scenarios.home.data.Item
 import com.example.toy_proejct.scenarios.home.data.getTempItems
 import com.example.toy_proejct.ui.component.CommonComponent
+import kotlinx.coroutines.launch
 
 
 //private val productList = listOf("A", "B", "C")
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    Search(viewModel, { ItemContent() })
-    Column(modifier = Modifier.fillMaxWidth()) {
-        //화면에 보여지는 부분을 구성
-//        productList.forEach{ item ->
-//            ProductItem(item)
-//        }
-
-        Spacer(modifier = Modifier.weight(1f))
-        CommonComponent.ButtomNavbar()
+    Search(viewModel) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            ItemContent(modifier = Modifier.weight(1f), itemList = viewModel.itemList.value)
+            CommonComponent.ButtomNavbar()
+        }
     }
-
 }
 
 //@Composable
@@ -78,9 +75,9 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
 
 @Composable
-fun ItemContent(itemList: List<Item> = getTempItems()
-){
-    Column(modifier = Modifier.padding(12.dp)) {
+fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>){
+    Column(modifier = modifier
+        .padding(12.dp)) {
         LazyColumn{
             items(items = itemList){
                 //Text(text = it)
@@ -91,52 +88,59 @@ fun ItemContent(itemList: List<Item> = getTempItems()
 }
 
 @Composable
-fun ItemRow(item: Item){ //각 상품에 대한 설명
-    Card(modifier = Modifier
-        .padding(4.dp)
-        .fillMaxWidth()
-        .height(120.dp),
-    shape = RoundedCornerShape(corner = CornerSize(14.dp)),
-        elevation = 5.dp) {
-        Row(verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center) {
-            Surface(modifier = Modifier
-                .padding(12.dp)
-                .size(100.dp),
+fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .height(120.dp)
+            .clickable {
+                context.startActivity(
+                    Intent(context, DetailActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        putExtra("title", item.title)
+                        putExtra("minimumPrice", item.minimumPrice)
+                    }
+                )
+            },
+        shape = RoundedCornerShape(corner = CornerSize(14.dp)),
+        elevation = 5.dp
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Surface(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .size(100.dp),
                 shape = RectangleShape,
-                elevation = 4.dp){
-//                Icon(imageVector = Icons.Default.AccountBox,
-//                contentDescription = "Item Image")
-//                Image(painter = rememberImagePainter(item.image_url,
-//                builder = {
-//                    crossfade(true)
-//                    transformations(RoundedCornersTransformation())
-//                }),
-//                contentDescription = "image"
-//                )
-//               Image(
-//                    painter = rememberAsyncImagePainter("https://media.geeksforgeeks.org/wp-content/uploads/20210101144014/gfglogo.png"),
-//                    contentDescription = null,
-//                    modifier = Modifier.size(128.dp)
-//                )
+                elevation = 4.dp
+            ) {
+
                 AsyncImage(
-                    model = "https://cdn.pixabay.com/photo/2015/10/31/12/54/google-1015751__340.png",
+                    model = item.imageUrl, //
+                    //따로 설정하기
                     contentDescription = "temp"
                 )
-                //왜 ".png.. .gif등의 확장자가 붙은 이미지url만 화면에 표시되는지..?
-                // 다른 url을 표현하는 방법은 불가능???
-                //https://developer.android.com/jetpack/compose/graphics/images/loading
-            }
-                Column(modifier = Modifier.padding(4.dp)) {
-                    Text(text=item.title,
-                        style = MaterialTheme.typography.h6)
-                    Text(text="${item.price} 원",
-                        style = MaterialTheme.typography.caption)
-                }
 
             }
+            Column(modifier = Modifier.padding(4.dp)) {
+                Text(
+                    text = item.title,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = "${item.minimumPrice} 원",
+                    style = MaterialTheme.typography.caption
+                )
+            }
+
         }
     }
+}
 
 
 
@@ -153,6 +157,9 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
     val searchWidgetState by viewModel.searchWidgetState //활성화 여부
     val searchTextState by viewModel.searchTextState // 검색 변수
 
+    val coroutineScope = rememberCoroutineScope()
+
+
     Scaffold(
         topBar = {
             SearchBar(
@@ -166,7 +173,8 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 
                 },
                 onSearchClicked = {
-                   // viewModel.searchApi(it)  //코루틴에서만 호출되어야 한다. -?
+                    coroutineScope.launch{viewModel.searchApi(it)}
+                    //viewModel.searchApi(it)  //코루틴에서만 호출되어야 한다. -?
                     Log.d("Searched Text", it) //검색버튼이 눌리면 특정 함수 실행
                 },
                 onSearchTriggered = {
@@ -224,7 +232,6 @@ fun DefaultAppBar(onSearchClicked: () -> Unit , text: String) {
                     modifier = Modifier.fillMaxWidth(),
                     text="상품 검색",
                     textAlign = TextAlign.Center
-
                 )
             }
         },
@@ -238,6 +245,9 @@ fun DefaultAppBar(onSearchClicked: () -> Unit , text: String) {
                     tint = Color.White
                 )
             }
+        },
+        navigationIcon = {
+            Spacer(modifier = Modifier.size(20.dp))
         }
     )
 }

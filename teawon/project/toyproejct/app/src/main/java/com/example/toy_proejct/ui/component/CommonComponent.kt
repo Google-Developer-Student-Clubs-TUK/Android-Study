@@ -1,5 +1,6 @@
 package com.example.toy_proejct.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,14 +12,16 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 object CommonComponent {
     @Composable
-    public fun ButtomNavbar() {
+    fun ButtomNavbar() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(color = Color.White)
                 .padding(vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
