@@ -29,8 +29,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.toy_proejct.api.getDetail.DetailDto
+import com.example.toy_proejct.api.getDetail.MallDtoInfo
 import com.example.toy_proejct.api.getSearchList.ProductListDto
 import com.example.toy_proejct.scenarios.detail.DetailActivity
+import com.example.toy_proejct.scenarios.home.ItemRow
 import com.example.toy_proejct.ui.component.CommonComponent
 import kotlinx.coroutines.launch
 
@@ -39,8 +42,13 @@ fun DetailScreen(viewModel: DetailViewModel, title2: String?, minimumPrice2: Int
 
     val title = title2
     val minimumPrice = minimumPrice2
+    val coroutineScope = rememberCoroutineScope() //코루틴 생성
 
-    DetailComponent(viewModel,back, title, minimumPrice)
+    LaunchedEffect(true){
+        coroutineScope.launch{viewModel.getDetailInfo()}
+    }
+
+    DetailComponent(viewModel,back, title, minimumPrice, itemList = viewModel.detailInfo.value)
 }
 
 @Composable
@@ -48,7 +56,8 @@ private fun DetailComponent(
     viewModel:DetailViewModel,
     back: () -> Unit,
     title: String?,
-    minimumPrice: Int
+    minimumPrice: Int,
+    itemList: DetailDto,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -68,6 +77,47 @@ private fun DetailComponent(
             )
         }
         Text(text = "가격: ${minimumPrice}원")
+        LazyColumn{
+            items(items = itemList.mallDtoInfo){
+                MallList(item = it)
+            }
+        }
     }
 }
 
+@Composable
+fun MallList(item: MallDtoInfo) { //각 상품에 대한 설명
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+            .height(120.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Column(modifier = Modifier.padding(4.dp)) {
+                Text(
+                    text = item.link,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = item.link,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    text = item.paymentOption,
+                    style = MaterialTheme.typography.h6
+                )
+            }
+
+        }
+    }
+}

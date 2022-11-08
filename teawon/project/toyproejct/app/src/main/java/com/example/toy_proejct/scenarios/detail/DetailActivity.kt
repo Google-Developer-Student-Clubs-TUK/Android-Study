@@ -29,6 +29,7 @@ class DetailActivity : ComponentActivity() {
 
     val viewModel by viewModels<DetailViewModel>() //암기
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val title = intent.getStringExtra("title")
