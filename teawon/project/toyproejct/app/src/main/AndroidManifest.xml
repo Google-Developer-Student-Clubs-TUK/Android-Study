@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".scenarios.home.DetailActivity"
+            android:name=".scenarios.detail.DetailActivity"
             android:exported="false"
             android:label="@string/title_activity_detail"
             android:theme="@style/Theme.Toyproejct">

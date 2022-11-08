@@ -1,7 +1,6 @@
 package com.example.toy_proejct.scenarios.home
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,17 +26,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import coil.transform.RoundedCornersTransformation
 import com.example.toy_proejct.api.getSearchList.ProductListDto
-import com.example.toy_proejct.scenarios.home.data.Item
-import com.example.toy_proejct.scenarios.home.data.getTempItems
+import com.example.toy_proejct.scenarios.detail.DetailActivity
 import com.example.toy_proejct.ui.component.CommonComponent
 import kotlinx.coroutines.launch
 
 
-//private val productList = listOf("A", "B", "C")
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -45,33 +39,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
         Column(modifier = Modifier.fillMaxSize()) {
             ItemContent(modifier = Modifier.weight(1f), itemList = viewModel.itemList.value)
             CommonComponent.ButtomNavbar()
+
         }
     }
 }
-
-//@Composable
-//fun Body(content: @Composable () -> Unit) {
-//    ItemTheme {
-//        val scope = rememberCoroutineScope()
-//        val scaffoldState = rememberScaffoldState()
-//
-//        Scaffold(topBar = {
-//            TopAppBar(backgroundColor = Color.Gray, elevation = 5.dp,
-//                title = { Text(text = "Items") },
-//                navigationIcon = {
-//                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-//                },
-//                actions = {
-//                    Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorite")
-//                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
-//                }
-//            )
-//        }
-//        ) {
-//        content()
-//    }
-//    }
-//}
 
 
 @Composable
@@ -80,7 +51,6 @@ fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>){
         .padding(12.dp)) {
         LazyColumn{
             items(items = itemList){
-                //Text(text = it)
                 ItemRow(item = it)
             }
         }
@@ -145,19 +115,14 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
 
 
 
-@Composable
-private fun ProductItem(item: String) {
-    Column {
-        Text(text = item)
-    }
-}
+
 
 @Composable
 private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
     val searchWidgetState by viewModel.searchWidgetState //활성화 여부
     val searchTextState by viewModel.searchTextState // 검색 변수
 
-    val coroutineScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope() //코루틴 생성
 
 
     Scaffold(
@@ -173,9 +138,7 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 
                 },
                 onSearchClicked = {
-                    coroutineScope.launch{viewModel.searchApi(it)}
-                    //viewModel.searchApi(it)  //코루틴에서만 호출되어야 한다. -?
-                    Log.d("Searched Text", it) //검색버튼이 눌리면 특정 함수 실행
+                    coroutineScope.launch{viewModel.searchApi(it)} //코루틴에서 Ktor-api호출
                 },
                 onSearchTriggered = {
                     viewModel.updateSearchWidgetState(newState = true) //Search영역이 클릭되면 Search영역 활성화
@@ -327,19 +290,3 @@ fun SearchAppBar(
 }
 
 
-//@Composable
-//@Preview
-//fun DefaultAppBarPreview() {
-//    DefaultAppBar(onSearchClicked = {})
-//}
-//
-//@Composable
-//@Preview
-//fun SearchAppBarPreview() {
-//    SearchAppBar(
-//        text = "Some random text",
-//        onTextChange = {},
-//        onCloseClicked = {},
-//        onSearchClicked = {}
-//    )
-//}

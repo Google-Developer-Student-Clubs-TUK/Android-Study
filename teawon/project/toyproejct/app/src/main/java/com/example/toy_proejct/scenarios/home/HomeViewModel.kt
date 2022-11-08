@@ -62,15 +62,14 @@ class HomeViewModel : ViewModel() {
             )
         }
     }
-    //사실 이렇게 사용하기보다는 싱글톤으로 묶는게 좋다
-    // Ktor 구버전의 방식 -
+
 
     suspend fun searchApi(keyword:String) {
         withContext(Dispatchers.IO) {
              kotlin.runCatching {
                 client.get<GetSearchList>("http://3.39.75.19:8080/api/v1/crawler/search/products?word=$keyword")
             }.onSuccess {
-                _itemList.value = it.productListDtoList
+                _itemList.value = it.productListDtoList //성공시 데이터 갱신
                 LogHelper.print("succses: ${it.productListDtoList.size}")
             }.onFailure {
                 LogHelper.print("Failure: $it")
