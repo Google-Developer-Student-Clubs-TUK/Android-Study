@@ -52,5 +52,3 @@ export const reqDB = async (sql, params) => {
     });
     return response;
 }
-
-export const makeInsertSql = (table, params) => `INSERT INTO ${table} (${params.join(', ')}) values (${params.map(param => param != 'createdAt' ? '?' : 'NOW()').join(', ')})`;
