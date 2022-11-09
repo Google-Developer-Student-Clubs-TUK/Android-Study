@@ -1,11 +1,9 @@
 package com.example.gdsc_androidstudy.intro // ktlint-disable package-name
 
-import android.app.Activity
-import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gdsc_androidstudy.data.SharedPreference
+import com.example.gdsc_androidstudy.data.AppPref
 import com.example.gdsc_androidstudy.data.User
 import com.example.gdsc_androidstudy.utilites.App
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -21,13 +19,12 @@ import kotlinx.coroutines.launch
 class StartViewModel : ViewModel() {
     sealed class LoginState {
         object Loading : LoginState()
-        object RequireLogin : LoginState()
-        object RequireJoin : LoginState()
+        object RequireGoogleLogin : LoginState()
+        object RequireRegister : LoginState()
         object CompletedLogin : LoginState()
     }
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val pref = SharedPreference(App.context())
 
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Loading)
     val loginState = _loginState.asStateFlow()
@@ -40,7 +37,7 @@ class StartViewModel : ViewModel() {
                 kotlin.runCatching {
                     listOf(
                         async {
-                            getLastSignedInAccount(App.context())
+                            getLastSignedInAccount(App.context)
                         },
                         async {
                             delay(2000)
@@ -55,23 +52,19 @@ class StartViewModel : ViewModel() {
         // sharedPreference에 저장된 데이터가 있으면 가입된 유저라고 간주
         viewModelScope.launch {
             if (isLogin) {
-                hasId.value = pref.getUserPref()
+                hasId.value = App.appPref.getUserPref()
                 if (hasId.value) {
                     _loginState.emit(LoginState.CompletedLogin)
                 } else {
-                    var user: User? = null
-                    async {
-                        user = hasAccount()
-                    }.await()
-                    if (user != null) {
-                        pref.serUserPref(user!!)
+                    hasAccount()?.let { user ->
+                        App.appPref.setUserPref(user)
                         _loginState.emit(LoginState.CompletedLogin)
-                    } else {
-                        _loginState.emit(LoginState.RequireJoin)
+                    }?: kotlin.run {
+                        _loginState.emit(LoginState.RequireRegister)
                     }
                 }
             } else {
-                _loginState.emit(LoginState.RequireLogin)
+                _loginState.emit(LoginState.RequireGoogleLogin)
             }
         }
     }
@@ -88,7 +81,7 @@ class StartViewModel : ViewModel() {
     fun joinAccount(nickname: String) {
         auth.currentUser?.let {
             val user = User(it.uid, nickname, email = it.email!!, profileImg = null)
-            pref.serUserPref(user)
+            App.appPref.setUserPref(user)
             // 디비 가입
         }
         if (true) {

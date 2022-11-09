@@ -1,4 +1,4 @@
-package com.example.gdsc_androidstudy.main.post // ktlint-disable package-name
+package com.example.gdsc_androidstudy.data // ktlint-disable package-name
 
 data class PostData(
     val userId: String,

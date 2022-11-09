@@ -2,13 +2,12 @@ package com.example.gdsc_androidstudy.intro
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -33,8 +32,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -47,7 +44,8 @@ class StartActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Surface(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Image(painter = painterResource(id = R.drawable.loading_img), contentDescription = "로딩")
                 var joinDialogState by remember {
                     mutableStateOf(false)
                 }
@@ -55,10 +53,12 @@ class StartActivity : ComponentActivity() {
                     JoinDialog(changeDialogState = { joinDialogState = it }, viewModel = viewModel)
                 }
                 when (viewModel.loginState.collectAsState().value) {
-                    StartViewModel.LoginState.RequireLogin -> {
-                        SignInGoogleButton { googleLoin() }
+                    StartViewModel.LoginState.RequireGoogleLogin -> {
+                        Surface(modifier = Modifier.padding(top = 200.dp)) {
+                            SignInGoogleButton { googleLoin() }
+                        }
                     }
-                    StartViewModel.LoginState.RequireJoin -> {
+                    StartViewModel.LoginState.RequireRegister -> {
                         joinDialogState = true
                     }
                 }
@@ -135,8 +135,7 @@ fun SignInGoogleButton(onClick: () -> Unit) {
         modifier = Modifier
             .clickable(onClick = onClick)
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, bottom = 40.dp),
-        color = MaterialTheme.colors.background,
+            .padding(start = 20.dp, end = 20.dp, bottom = 40.dp).background(Color.Transparent),
         shape = MaterialTheme.shapes.small,
         elevation = 5.dp
     ) {

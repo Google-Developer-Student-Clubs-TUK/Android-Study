@@ -16,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.gdsc_androidstudy.main.CommentScreen
+import com.example.gdsc_androidstudy.main.MyPageScreen
 import com.example.gdsc_androidstudy.main.post.PostPage
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector, val route: String) {
@@ -49,19 +51,22 @@ fun Screen(startRoute: String, navController: NavHostController, modifier: Modif
     // NavHost 로 네비게이션 결정
     NavHost(navController, startRoute) {
         composable(BottomNavItem.PostPage.route) {
-            PostPage()
+            PostPage(navController)
         }
         composable(BottomNavItem.MyPage.route) {
-            PostPage()
+            MyPageScreen(navHostController = navController)
         }
         composable(BottomNavItem.SearchPage.route) {
-            PostPage()
+            PostPage(navController)
         }
         composable(BottomNavItem.ShopPage.route) {
-            PostPage()
+            PostPage(navController)
         }
         composable(BottomNavItem.ShortVideoPage.route) {
-            PostPage()
+            PostPage(navController)
+        }
+        composable("댓글") {
+            CommentScreen(postId = 1, navController)
         }
     }
 }

@@ -29,14 +29,15 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
+import com.example.gdsc_androidstudy.data.PostData
 
 @Composable
-fun PostItem(postData: PostData) {
+fun PostItem(postData: PostData, navHostController: NavHostController) {
     val scrollState = rememberScrollState()
     Column() {
         DrawLine()
@@ -93,13 +94,13 @@ fun PostItem(postData: PostData) {
                     Spacer(modifier = Modifier.width(12.dp))
                     Icon(
                         imageVector = Icons.Filled.MailOutline,
-                        contentDescription = "heart",
-                        modifier = Modifier.size(26.dp).clickable { }
+                        contentDescription = "comment",
+                        modifier = Modifier.size(26.dp).clickable { navHostController.navigate("댓글") }
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Icon(
                         imageVector = Icons.Filled.Send,
-                        contentDescription = "heart",
+                        contentDescription = "share",
                         modifier = Modifier.size(26.dp)
                             .clickable { }
                     )
@@ -118,11 +119,11 @@ fun PostItem(postData: PostData) {
             Text(text = "좋아요 10개", fontSize = 15.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 10.dp, bottom = 8.dp))
             Text(
                 buildAnnotatedString {
-                    withStyle(style = ParagraphStyle(lineHeight = 23.sp)){
-                        withStyle(style = SpanStyle(fontSize = 15.sp, fontWeight = FontWeight.SemiBold)){
+                    withStyle(style = ParagraphStyle(lineHeight = 23.sp)) {
+                        withStyle(style = SpanStyle(fontSize = 15.sp, fontWeight = FontWeight.SemiBold)) {
                             append("zinkikixx ")
                         }
-                        withStyle(style = SpanStyle(fontSize = 15.sp)){
+                        withStyle(style = SpanStyle(fontSize = 15.sp)) {
                             append("안뇽안뇽어ㄷ쩌구~~~~~~~~~~헬로안뇽안뇽어ㄷ쩌구안뇽안뇽어ㄷ쩌구안뇽안뇽어ㄷ쩌구~")
                         }
                     }
@@ -147,10 +148,4 @@ fun DrawLine() {
             strokeWidth = 2.5f
         )
     }
-}
-
-@Composable
-@Preview
-fun ItemPreview() {
-    PostItem(postData = PostData("zinkikixx", "", "오늘의 OOTT", listOf(""), ""))
 }

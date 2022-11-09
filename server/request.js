@@ -19,10 +19,10 @@ export const reqDB = async (sql, params) => {
         msg: '연결 실패',
         result: null,
     };
-    pool.getConnection((err, connection)=>{
-        if(!err){
-            connection.query(sql, params, (err, result)=>{
-                if(err){
+    pool.getConnection((err, connection) => {
+        if (!err) {
+            connection.query(sql, params, (err, result) => {
+                if (err) {
                     response = {
                         isConnect: false,
                         resultCode: err.code,
@@ -30,7 +30,7 @@ export const reqDB = async (sql, params) => {
                         result: null,
                     };
                     connection.release();
-                }else{
+                } else {
                     response = {
                         isConnect: true,
                         resultCode: 200,
@@ -40,7 +40,7 @@ export const reqDB = async (sql, params) => {
                     connection.release();
                 }
             });
-        }else{
+        } else {
             console.log(err);
             response = {
                 isConnect: false,
@@ -52,3 +52,5 @@ export const reqDB = async (sql, params) => {
     });
     return response;
 }
+
+export const makeInsertSql = (table, params) => `INSERT INTO ${table} (${params.join(', ')}) values (${params.map(param => param != 'createdAt' ? '?' : 'NOW()').join(', ')})`;

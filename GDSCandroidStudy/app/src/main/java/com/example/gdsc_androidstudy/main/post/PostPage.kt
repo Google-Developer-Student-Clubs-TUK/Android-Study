@@ -20,10 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
+import com.example.gdsc_androidstudy.data.PostData
 
 @Composable
-fun PostPage() {
+fun PostPage(navHostController: NavHostController) {
     val scaffoldState = rememberScaffoldState()
     val viewModel = remember {
         PostViewModel()
@@ -79,17 +81,17 @@ fun PostPage() {
         }
     ) {
         Surface(modifier = Modifier.padding(it)) {
-            PostList(posts = viewModel.postData.collectAsState())
+            PostList(posts = viewModel.postData.collectAsState(), navHostController)
         }
     }
 }
 
 @Composable
-fun PostList(posts: State<List<PostData>>) {
+fun PostList(posts: State<List<PostData>>, navHostController: NavHostController) {
     val scope = LazyListState()
     LazyColumn(state = scope, modifier = Modifier.padding(bottom = 45.dp)) {
         items(posts.value) { item ->
-            PostItem(postData = item)
+            PostItem(postData = item, navHostController = navHostController)
         }
     }
 }
