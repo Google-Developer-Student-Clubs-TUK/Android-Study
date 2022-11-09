@@ -32,10 +32,12 @@ class DetailActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val title = intent.getStringExtra("title")
-        val minimumPrice = intent.getIntExtra("minimumPrice", -1)
+        val url = intent.getStringExtra("url")
+        //val minimumPrice = intent.getIntExtra("minimumPrice", -1)
         setContent {
-            DetailScreen(viewModel, title, minimumPrice) { finishActivity() }
+            if (url != null) {
+                DetailScreen(viewModel, url) { finishActivity() }
+            }
         }
     }
 

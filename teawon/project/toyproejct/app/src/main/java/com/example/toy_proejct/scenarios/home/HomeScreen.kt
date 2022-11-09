@@ -70,8 +70,7 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
                 context.startActivity(
                     Intent(context, DetailActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        putExtra("title", item.title)
-                        putExtra("minimumPrice", item.minimumPrice)
+                        putExtra("url", item.url)
                     }
                 )
             },

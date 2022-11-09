@@ -38,25 +38,22 @@ import com.example.toy_proejct.ui.component.CommonComponent
 import kotlinx.coroutines.launch
 
 @Composable
-fun DetailScreen(viewModel: DetailViewModel, title2: String?, minimumPrice2: Int, back:() -> Unit) {
+fun DetailScreen(viewModel: DetailViewModel, url: String, back:() -> Unit) {
 
-    val title = title2
-    val minimumPrice = minimumPrice2
     val coroutineScope = rememberCoroutineScope() //코루틴 생성
 
     LaunchedEffect(true){
-        coroutineScope.launch{viewModel.getDetailInfo()}
+        coroutineScope.launch{viewModel.getDetailInfo(url)}
     }
 
-    DetailComponent(viewModel,back, title, minimumPrice, itemList = viewModel.detailInfo.value)
+    DetailComponent(viewModel,back, url, itemList = viewModel.detailInfo.value)
 }
 
 @Composable
 private fun DetailComponent(
     viewModel:DetailViewModel,
     back: () -> Unit,
-    title: String?,
-    minimumPrice: Int,
+    url: String?,
     itemList: DetailDto,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -73,10 +70,18 @@ private fun DetailComponent(
                     back()
                 })
             Text(
-                text = title!!, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                text = itemList.title, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
             )
         }
-        Text(text = "가격: ${minimumPrice}원")
+        Text(
+            text = itemList.minimumPrice.toString(), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+        )
+        AsyncImage(
+            model = itemList.image, //
+            contentDescription = "image"
+        )
+
+
         LazyColumn{
             items(items = itemList.mallDtoInfo){
                 MallList(item = it)
