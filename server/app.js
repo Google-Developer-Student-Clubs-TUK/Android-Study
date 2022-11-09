@@ -1,8 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import userRouter from '/routes/user.js'
-import postRouter from '/routes/post.js'
-import commentRouter from '/routes/comment.js'
+import userRouter from './routes/user.js'
+import postRouter from './routes/post.js'
+import commentRouter from './routes/comment.js'
 
 
 const app = express();

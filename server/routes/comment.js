@@ -1,4 +1,4 @@
-import { makeInsertSql, reqDB } from '../request.js'
+import {reqDB} from '../request.js'
 import express from 'express';
 
 const router = express.Router();
@@ -10,7 +10,7 @@ router.post('/comment/entryComment',  async(req, res)=> {
     let {postId, userId, content} = req.body
 
     let params = [postId, userId, content, 0]
-    let sql = makeInsertSql('Content', params)
+    let sql = 'INSERT INTO Comment (postId, userId, content, createdAt) VALUES (?, ?, ?, NOW())'
 
     let response = await reqDB(sql, params);
     res.json(response);
