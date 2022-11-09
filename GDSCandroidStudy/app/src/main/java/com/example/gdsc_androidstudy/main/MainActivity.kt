@@ -66,7 +66,7 @@ fun Screen(startRoute: String, navController: NavHostController, modifier: Modif
             PostPage(navController)
         }
         composable("댓글") {
-            CommentScreen(postId = 1, navController)
+            CommentScreen(postId = 1, navHostController = navController)
         }
     }
 }

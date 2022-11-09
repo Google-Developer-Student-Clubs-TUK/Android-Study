@@ -1,8 +1,8 @@
 package com.example.gdsc_androidstudy.data
 
-data class Comment(
+data class CommentData(
     val postId: Int,
     val content: String,
     val userId: String,
-    val createdAt: Int
+    val createdAt: Long
 )

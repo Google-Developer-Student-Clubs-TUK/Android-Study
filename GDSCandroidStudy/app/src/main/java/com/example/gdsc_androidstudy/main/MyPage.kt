@@ -63,8 +63,8 @@ fun MyPageScreen(postViewModel: PostViewModel = viewModel(), navHostController: 
             )
         }
     ) {
-        Surface(modifier = Modifier.padding(it).fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp)) {
+        Column(modifier = Modifier.padding(it).fillMaxSize()) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
                 Row(modifier = Modifier.fillMaxWidth().height(100.dp), verticalAlignment = Alignment.CenterVertically) {
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         Image(
@@ -98,13 +98,14 @@ fun MyPageScreen(postViewModel: PostViewModel = viewModel(), navHostController: 
                     Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f).height(30.dp), colors = ButtonDefaults.buttonColors(Color.LightGray)) {
                         Text(text = "프로필 편집", fontSize = 11.sp)
                     }
+                    Spacer(modifier = Modifier.width(7.dp))
                     IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(30.dp)) {
                         Icon(imageVector = Icons.Filled.Person, contentDescription = "")
 //
                     }
                 }
-                Tab(postViewModel, navHostController)
             }
+            Tab(postViewModel, navHostController)
         }
     }
 }
@@ -122,7 +123,7 @@ fun Tab(postViewModel: PostViewModel, navHostController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
 
     TabRow(
-        modifier = Modifier.height(60.dp),
+        modifier = Modifier.height(40.dp),
         selectedTabIndex = pagerState.currentPage,
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
@@ -161,7 +162,7 @@ fun Tab(postViewModel: PostViewModel, navHostController: NavHostController) {
                             Icon(
                                 imageVector = tabList[title]!!,
                                 contentDescription = title,
-                                modifier = Modifier.size(35.dp),
+                                modifier = Modifier.size(23.dp),
                                 tint = Color.Black
                             )
                         }
@@ -172,8 +173,6 @@ fun Tab(postViewModel: PostViewModel, navHostController: NavHostController) {
             )
         }
     }
-
-    Spacer(modifier = Modifier.height(8.dp))
     HorizontalPager(state = pagerState) { page ->
         MyPostList(photos = postViewModel.postData.collectAsState().value)
     }
@@ -184,7 +183,7 @@ fun Tab(postViewModel: PostViewModel, navHostController: NavHostController) {
 fun MyPostList(photos: List<PostData>) {
     LazyVerticalGrid(cells = GridCells.Fixed(3)) {
         items(photos) { photo ->
-            Text(text = photo.toString())
+            Image(painter = painterResource(id = R.drawable.post), contentDescription = "contentImage", modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop)
         }
     }
 }
