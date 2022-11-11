@@ -26,6 +26,9 @@ class HomeViewModel : ViewModel() {
 
 
 
+    private  val _isLoading: MutableState<Boolean> = mutableStateOf(value = false)
+    val isLoading : State<Boolean> = _isLoading
+
 
     private val _searchWidgetState: MutableState<Boolean> = //검색창 활성화 여부
         mutableStateOf(value = false)
@@ -65,10 +68,12 @@ class HomeViewModel : ViewModel() {
 
 
     suspend fun searchApi(keyword:String) {
+        _isLoading.value = true
         withContext(Dispatchers.IO) {
              kotlin.runCatching {
                 client.get<GetSearchList>("http://3.39.75.19:8080/api/v1/crawler/search/products?word=$keyword")
             }.onSuccess {
+                 _isLoading.value = false
                 _itemList.value = it.productListDtoList //성공시 데이터 갱신
                 LogHelper.print("succses: ${it.productListDtoList.size}")
             }.onFailure {

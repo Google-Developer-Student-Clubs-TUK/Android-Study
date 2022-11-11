@@ -39,7 +39,6 @@ fun HomeScreen(viewModel: HomeViewModel) {
         Column(modifier = Modifier.fillMaxSize()) {
             ItemContent(modifier = Modifier.weight(1f), itemList = viewModel.itemList.value)
             CommonComponent.ButtomNavbar()
-
         }
     }
 }
@@ -120,6 +119,10 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
 private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
     val searchWidgetState by viewModel.searchWidgetState //활성화 여부
     val searchTextState by viewModel.searchTextState // 검색 변수
+    val isLoading by viewModel.isLoading //로딩 함수
+
+
+
 
     val coroutineScope = rememberCoroutineScope() //코루틴 생성
 
@@ -146,7 +149,12 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
             )
         }
     ) {
-        content()
+        if(isLoading){
+            CommonComponent.LoadingSpinner()
+        }
+        else{
+            content()
+        }
     }
 }
 
