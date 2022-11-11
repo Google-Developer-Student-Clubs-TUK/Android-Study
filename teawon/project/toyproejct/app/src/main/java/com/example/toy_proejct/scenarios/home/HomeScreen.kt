@@ -95,7 +95,7 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
                 )
 
             }
-            Column(modifier = Modifier.padding(4.dp)) {
+            Column(modifier = Modifier.padding(4.dp).fillMaxWidth()) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.h6

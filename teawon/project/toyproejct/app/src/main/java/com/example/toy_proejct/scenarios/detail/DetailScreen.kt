@@ -89,8 +89,11 @@ private fun DetailComponent(
                 contentDescription = "image",
                 modifier = Modifier.fillMaxWidth()
             )
-        Text(
-            text = "최저가 : ${itemList.minimumPrice}", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+
+                Text(
+            text = "쇼핑몰 정보", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h5
+
         )
 
         LazyColumn{
@@ -104,8 +107,6 @@ private fun DetailComponent(
 @Composable
 fun MallList(item: MallDtoInfo) { //각 상품에 대한 설명
     val context = LocalContext.current
-
-
 
     Card(
         modifier = Modifier
@@ -122,27 +123,19 @@ fun MallList(item: MallDtoInfo) { //각 상품에 대한 설명
             }
     ) {
 
-            Column(modifier = Modifier.padding(2.dp)) {
+            Column(modifier = Modifier.padding(2.dp), verticalArrangement = Arrangement.Center) {
                 Row( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
                         text = item.name,
                         style = MaterialTheme.typography.h6
                     )
                     Text(
-                        text = " ${item.price.toString()}원",
+                        text = " ${item.price}원",
                         style = MaterialTheme.typography.h6,
                         color = Color.Blue
 
                     )
                 }
-//                Text(
-//                    text = item.name,
-//                    style = MaterialTheme.typography.h6
-//                )
-//                Text(
-//                    text = item.paymentOption,
-//                    style = MaterialTheme.typography.h6
-//                )
             }
 
 
