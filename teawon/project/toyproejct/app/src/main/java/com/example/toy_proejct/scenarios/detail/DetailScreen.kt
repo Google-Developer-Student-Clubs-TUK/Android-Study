@@ -45,12 +45,18 @@ import kotlinx.coroutines.launch
 fun DetailScreen(viewModel: DetailViewModel, url: String, back:() -> Unit) {
 
     val coroutineScope = rememberCoroutineScope() //코루틴 생성
+    val isLoading by viewModel.isLoading //로딩 확인
 
     LaunchedEffect(true){
         coroutineScope.launch{viewModel.getDetailInfo(url)}
     }
 
-    DetailComponent(viewModel,back, url, itemList = viewModel.detailInfo.value)
+    if(isLoading) {
+        CommonComponent.LoadingSpinner()
+    }
+    else{
+        DetailComponent(viewModel, back, url, itemList = viewModel.detailInfo.value)
+    }
 }
 
 @Composable
@@ -84,7 +90,7 @@ private fun DetailComponent(
                 modifier = Modifier.fillMaxWidth()
             )
         Text(
-            text = "최저가 : ${itemList.minimumPrice.toString()}", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+            text = "최저가 : ${itemList.minimumPrice}", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
         )
 
         LazyColumn{
@@ -98,6 +104,7 @@ private fun DetailComponent(
 @Composable
 fun MallList(item: MallDtoInfo) { //각 상품에 대한 설명
     val context = LocalContext.current
+
 
 
     Card(

@@ -25,7 +25,8 @@ class DetailViewModel : ViewModel() {
         listOf(),0,"",""))
     val detailInfo: MutableState<DetailDto> =_detailInfo; //화면에 표현될 list
 
-    //초기값을 굳이 넣어야하나?? boolean타입으로 로딩여부를 확인하고 로딩이 되면 받아온 값을 불러오면안되나?
+    private  val _isLoading: MutableState<Boolean> = mutableStateOf(value = false)
+    val isLoading : State<Boolean> = _isLoading
 
     private val client: HttpClient = HttpClient(CIO) {
         install(JsonFeature) {
@@ -41,11 +42,13 @@ class DetailViewModel : ViewModel() {
 
 
     suspend fun getDetailInfo(url:String) {
+        _isLoading.value = true
         withContext(Dispatchers.IO) {
             kotlin.runCatching {
                 client.get<DetailDto>("http://3.39.75.19:8080/api/v1/crawler/search/product?url=${url}")
             }.onSuccess {
                 _detailInfo.value = it //성공시 데이터 갱신
+                _isLoading.value = false
                 LogHelper.print("success111: ${it}")
             }.onFailure {
                 LogHelper.print("faaaailed: $it")
