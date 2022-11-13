@@ -16,9 +16,9 @@ class MainViewModel : ViewModel() {
     private val _weather = MutableStateFlow<WeatherState>(WeatherState.Loading)
     val weather : StateFlow<WeatherState> = _weather
 
-    fun getCurrentWeather(lat:Double, lon:Double){
+    fun getCurrentWeather(latitude:Double, longitude:Double){
         viewModelScope.launch{
-            when(val loadResult = repository.getWeather(lat, lon)){
+            when(val loadResult = repository.getWeather(latitude, longitude)){
                 is Load.Success -> {
                     _weather.value = WeatherState.Loaded(loadResult.data)
                 }

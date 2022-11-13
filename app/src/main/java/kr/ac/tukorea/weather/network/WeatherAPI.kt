@@ -1,5 +1,6 @@
 package kr.ac.tukorea.weather.network
 
+import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
@@ -9,6 +10,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
 import kotlinx.serialization.json.Json
 import kr.ac.tukorea.weather.data.WeatherData
+import java.util.concurrent.CancellationException
 
 object WeatherAPI {
     const val API_KEY = "9a24b96b3ff42648de6d674032a49494"
@@ -21,6 +23,13 @@ object WeatherAPI {
             requestTimeoutMillis = 30000L
             connectTimeoutMillis = 30000L
             socketTimeoutMillis = 30000L
+        }
+
+        install(HttpRequestRetry) {
+//            maxRetries = 5
+            retryOnExceptionIf() { request, cause ->
+                cause is CancellationException
+            }
         }
 
         install(ContentNegotiation) {
@@ -43,6 +52,7 @@ object WeatherAPI {
             }.body<WeatherData>()
             httpResponse
         } catch (e: Exception) {
+            Log.d("error", "에러났쇼")
             WeatherData()
         }
     }

@@ -88,7 +88,6 @@ class MainActivity : ComponentActivity(), LocationListener {
 
     @SuppressLint("MissingPermission")
     fun getCurrentLocation() {
-        var cancellationTokenSource: CancellationTokenSource? = null
         val locationManager =
             applicationContext.getSystemService(LOCATION_SERVICE) as LocationManager
         val gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -97,14 +96,19 @@ class MainActivity : ComponentActivity(), LocationListener {
             showLocationPrompt()
         }
 
-        cancellationTokenSource = CancellationTokenSource()
         fusedLocationClient.getCurrentLocation(
-            LocationRequest.PRIORITY_HIGH_ACCURACY,
-            cancellationTokenSource!!.token
-        ).addOnSuccessListener { location: Location? ->
+        LocationRequest.PRIORITY_HIGH_ACCURACY,
+        object : CancellationToken() {
+            override fun onCanceledRequested(p0: OnTokenCanceledListener) =
+                CancellationTokenSource()!!.token
+            override fun isCancellationRequested() = false
+        }).addOnSuccessListener { location: Location? ->
             if (location == null) Toast.makeText(this, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
             else {
-                Log.d("위치 정보", "${location?.latitude}, ${location?.longitude}")
+                location.let{
+                    Log.d("showing", "나옵니다용")
+                    viewModel.getCurrentWeather(it.latitude, it.longitude)
+                }
             }
         }
     }
@@ -124,11 +128,8 @@ class MainActivity : ComponentActivity(), LocationListener {
                 when (exception.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
                         try {
-                            val resolvable: ResolvableApiException =
-                                exception as ResolvableApiException
-                            resolvable.startResolutionForResult(
-                                this, LocationRequest.PRIORITY_HIGH_ACCURACY
-                            )
+                            val resolvable: ResolvableApiException = exception as ResolvableApiException
+                            resolvable.startResolutionForResult(this, LocationRequest.PRIORITY_HIGH_ACCURACY)
                         } catch (e: IntentSender.SendIntentException) {
                         } catch (e: ClassCastException) {
                         }

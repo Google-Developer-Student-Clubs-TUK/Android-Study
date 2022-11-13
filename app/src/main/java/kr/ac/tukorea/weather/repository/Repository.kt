@@ -7,7 +7,7 @@ import kr.ac.tukorea.weather.network.WeatherAPI
 
 class Repository {
     suspend fun getWeather(latitude: Double, longitude: Double) : Load<WeatherData> {
-        return ExceptControl.ExceptionCall{
+        return ExceptControl.exceptionCall{
             WeatherAPI.getWeather(latitude, longitude)
         }
     }
