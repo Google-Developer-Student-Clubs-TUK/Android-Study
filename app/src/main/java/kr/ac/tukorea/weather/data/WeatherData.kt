@@ -2,6 +2,7 @@ package kr.ac.tukorea.weather.data
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class WeatherData(
     val base: String? = null,
     val cloud: Cloud? = null,
