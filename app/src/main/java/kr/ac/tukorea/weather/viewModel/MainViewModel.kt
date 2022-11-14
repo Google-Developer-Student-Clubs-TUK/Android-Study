@@ -10,24 +10,19 @@ import kr.ac.tukorea.weather.network.Load
 import kr.ac.tukorea.weather.repository.Repository
 
 class MainViewModel : ViewModel() {
-
-    private val repository by lazy{ Repository() }
-
     private val _weather = MutableStateFlow<WeatherState>(WeatherState.Loading)
     val weather : StateFlow<WeatherState> = _weather
 
     fun getCurrentWeather(latitude:Double, longitude:Double){
         viewModelScope.launch{
-            when(val loadResult = repository.getWeather(latitude, longitude)){
-                is Load.Success -> {
-                    _weather.value = WeatherState.Loaded(loadResult.data)
-                }
-                is Load.Error -> {
-                    _weather.value = WeatherState.Error(loadResult.errMsg)
-                }
-                is Load.Loading -> {
-                    _weather.value = WeatherState.Loading
-                }
+            _weather.value = WeatherState.Loading
+
+            _weather.value = kotlin.runCatching {
+                Repository.getWeather(latitude, longitude)
+            }.mapCatching {
+                WeatherState.Loaded(it)
+            }.getOrElse {
+                WeatherState.Error(it.toString())
             }
         }
     }

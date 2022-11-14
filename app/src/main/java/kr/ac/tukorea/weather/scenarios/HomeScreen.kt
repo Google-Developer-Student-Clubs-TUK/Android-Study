@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -24,7 +23,6 @@ import kr.ac.tukorea.weather.ui.theme.skybluedark
 import kr.ac.tukorea.weather.utils.getWeatherImage
 import kr.ac.tukorea.weather.viewModel.MainViewModel
 import kr.ac.tukorea.weather.viewModel.WeatherState
-import java.util.*
 
 @Composable
 fun Home(viewModel: MainViewModel, navController: NavHostController) {
@@ -47,8 +45,9 @@ fun Home(viewModel: MainViewModel, navController: NavHostController) {
                     }
                 }
                 is WeatherState.Loaded -> {
-                    showToday(state)
-                    showWeather(state)
+                    Kawai(state)
+//                    ShowToday(state)
+//                    ShowWeather(state)
                 }
             }
 
@@ -58,7 +57,108 @@ fun Home(viewModel: MainViewModel, navController: NavHostController) {
 }
 
 @Composable
-fun showToday(state: WeatherState.Loaded) {
+private fun Kawai(state: WeatherState.Loaded) {
+    val name = state.data.name ?: "-"
+    val description = state.data.weather!![0]!!.description!!.substring(0, 1)
+        .uppercase() + state.data.weather[0]!!.description!!.substring(
+        1
+    ).lowercase()
+    val temp = "${((state.data.main!!.temp!! - 273.15)).toInt()}°"
+    val feelTemp = "체감 기온 ${((state.data.main.feels_like!! - 273.15)).toInt()}°"
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
+        Text(
+            text = name,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Card(
+            elevation = 20.dp,
+            shape = RoundedCornerShape(30.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.27f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                skyblue, skybluedark
+                            )
+                        )
+                    )
+                    .padding(top = 0.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = temp,
+                        modifier = Modifier
+                            .graphicsLayer(alpha = 0.99f)
+                            .drawWithCache {
+                                val brush = Brush.verticalGradient(
+                                    listOf(
+                                        Color.White,
+                                        skyblue
+                                    )
+                                )
+                                onDrawWithContent {
+                                    drawContent()
+                                    drawRect(
+                                        brush,
+                                        blendMode = BlendMode.SrcAtop
+                                    )
+                                }
+                            },
+                        fontSize = 70.sp,
+                        fontWeight = FontWeight.W700,
+                        lineHeight = 60.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        modifier = Modifier,
+                        text = feelTemp,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                    )
+                }
+                Row(
+                    modifier = Modifier.padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = description,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Image(
+                        painter = painterResource(
+                            id = getWeatherImage(state.data.weather[0]!!.icon!!)
+                        ),
+                        contentDescription = "",
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowToday(state: WeatherState.Loaded) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,20 +170,11 @@ fun showToday(state: WeatherState.Loaded) {
             fontWeight = FontWeight.Bold,
             color = Color.Black
         )
-        Text(
-            text = state.data.name!!,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
     }
 }
 
 @Composable
-fun showWeather(state: WeatherState.Loaded) {
-    val width = LocalConfiguration.current.screenWidthDp
-    val height = LocalConfiguration.current.screenHeightDp
-
+fun ShowWeather(state: WeatherState.Loaded) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,7 +189,7 @@ fun showWeather(state: WeatherState.Loaded) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 30.dp)
-                    .height((height * 0.25).dp)
+                    .fillMaxHeight(0.25f)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -115,9 +206,9 @@ fun showWeather(state: WeatherState.Loaded) {
                         ) {
                             Text(
                                 state.data.weather!![0]!!.description!!.substring(0, 1)
-                                    .toUpperCase() + state.data.weather!![0]!!.description!!.substring(
+                                    .uppercase() + state.data.weather[0]!!.description!!.substring(
                                     1
-                                ).toLowerCase(),
+                                ).lowercase(),
                                 color = Color.White,
                                 fontSize = 25.sp,
                                 fontWeight = FontWeight.W800,
@@ -155,7 +246,7 @@ fun showWeather(state: WeatherState.Loaded) {
                         )
                         Text(
                             modifier = Modifier,
-                            text = "체감 기온 ${((state.data.main!!.feels_like!! - 273.15)).toInt()}°",
+                            text = "체감 기온 ${((state.data.main.feels_like!! - 273.15)).toInt()}°",
                             color = Color.White,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
@@ -164,12 +255,12 @@ fun showWeather(state: WeatherState.Loaded) {
                     }
                     Image(
                         painter = painterResource(
-                            id = getWeatherImage(state.data.weather!![0]!!.icon!!)
+                            id = getWeatherImage(state.data.weather[0]!!.icon!!)
                         ),
                         contentDescription = "",
                         modifier = Modifier
-                            .height((height * 0.17).dp)
-                            .width((width * 0.5).dp),
+                            .fillMaxWidth(0.5f)
+                            .fillMaxHeight(0.17f),
                         alignment = Alignment.TopCenter
                     )
                 }
@@ -191,8 +282,7 @@ fun showWeather(state: WeatherState.Loaded) {
                                 painter = painterResource(id = R.drawable.i04d),
                                 contentDescription = "",
                                 modifier = Modifier
-                                    .height((width * 0.18).dp)
-                                    .width((width * 0.18).dp)
+                                    .fillMaxSize(0.18f)
                                     .background(
                                         Color.Blue.copy(alpha = 0.05f)
                                     )
@@ -203,7 +293,7 @@ fun showWeather(state: WeatherState.Loaded) {
 
                         Text(
                             modifier = Modifier
-                                .width((width * 0.18).dp)
+                                .fillMaxWidth(0.18f)
                                 .padding(vertical = 10.dp),
                             text = state.data.cloud?.all.toString() + "%",
                             fontWeight = FontWeight.Bold,
@@ -222,8 +312,7 @@ fun showWeather(state: WeatherState.Loaded) {
                                 painter = painterResource(id = R.drawable.wind),
                                 contentDescription = "",
                                 modifier = Modifier
-                                    .height((width * 0.18).dp)
-                                    .width((width * 0.18).dp)
+                                    .fillMaxSize(0.18f)
                                     .background(
                                         Color.Blue.copy(alpha = 0.05f)
                                     )
@@ -235,7 +324,7 @@ fun showWeather(state: WeatherState.Loaded) {
 
                         Text(
                             modifier = Modifier
-                                .width((width * 0.18).dp)
+                                .fillMaxWidth(0.18f)
                                 .padding(vertical = 10.dp),
                             text = (state.data.wind?.speed!! * 3600 / 1000).toInt()
                                 .toString() + " km/h",
@@ -255,8 +344,7 @@ fun showWeather(state: WeatherState.Loaded) {
                                 painter = painterResource(id = R.drawable.humidity),
                                 contentDescription = "",
                                 modifier = Modifier
-                                    .height((width * 0.18).dp)
-                                    .width((width * 0.18).dp)
+                                    .fillMaxSize(0.18f)
                                     .background(
                                         Color.Blue.copy(alpha = 0.05f)
                                     )
@@ -267,7 +355,7 @@ fun showWeather(state: WeatherState.Loaded) {
 
                         Text(
                             modifier = Modifier
-                                .width((width * 0.18).dp)
+                                .fillMaxWidth(0.18f)
                                 .padding(vertical = 10.dp),
                             text = state.data.main?.humidity.toString() + "%",
                             fontWeight = FontWeight.Bold,
