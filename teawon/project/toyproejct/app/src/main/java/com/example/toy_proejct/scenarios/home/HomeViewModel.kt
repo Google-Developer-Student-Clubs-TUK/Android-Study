@@ -1,22 +1,17 @@
 package com.example.toy_proejct.scenarios.home
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.toy_proejct.LogHelper
-import com.example.toy_proejct.api.getSearchList.GetSearchList
-import com.example.toy_proejct.api.getSearchList.ProductListDto
-import com.example.toy_proejct.scenarios.home.data.Item
+import com.example.toy_proejct.scenarios.home.data.GetSearchList
+import com.example.toy_proejct.scenarios.home.data.ProductListDto
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

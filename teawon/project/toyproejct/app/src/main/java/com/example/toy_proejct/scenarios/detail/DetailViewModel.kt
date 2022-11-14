@@ -5,10 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.toy_proejct.LogHelper
-import com.example.toy_proejct.api.getDetail.DetailDto
-import com.example.toy_proejct.api.getDetail.MallDtoInfo
-import com.example.toy_proejct.api.getSearchList.GetSearchList
-import com.example.toy_proejct.api.getSearchList.ProductListDto
+import com.example.toy_proejct.scenarios.detail.data.DetailDto
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.features.json.*
@@ -16,13 +13,14 @@ import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 
 
 class DetailViewModel : ViewModel() {
 
-    private val _detailInfo : MutableState<DetailDto> = mutableStateOf<DetailDto>(DetailDto("",
-        listOf(),0,"",""))
+    private val _detailInfo : MutableState<DetailDto> = mutableStateOf<DetailDto>(
+        DetailDto("",
+        listOf(),0,"","")
+    )
     val detailInfo: MutableState<DetailDto> =_detailInfo; //화면에 표현될 list
 
     private  val _isLoading: MutableState<Boolean> = mutableStateOf(value = false)

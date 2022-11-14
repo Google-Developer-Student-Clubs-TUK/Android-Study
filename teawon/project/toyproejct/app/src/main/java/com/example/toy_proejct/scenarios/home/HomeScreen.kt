@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.toy_proejct.api.getSearchList.ProductListDto
+import com.example.toy_proejct.scenarios.home.data.ProductListDto
 import com.example.toy_proejct.scenarios.detail.DetailActivity
 import com.example.toy_proejct.ui.component.CommonComponent
 import kotlinx.coroutines.launch
@@ -64,7 +64,7 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
-            .height(120.dp)
+            .height(160.dp)
             .clickable {
                 context.startActivity(
                     Intent(context, DetailActivity::class.java).apply {
@@ -89,9 +89,8 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
             ) {
 
                 AsyncImage(
-                    model = item.imageUrl, //
-                    //따로 설정하기
-                    contentDescription = "temp"
+                    model = item.imageUrl,
+                    contentDescription = "image"
                 )
 
             }
@@ -109,8 +108,6 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
         }
     }
 }
-
-
 
 
 

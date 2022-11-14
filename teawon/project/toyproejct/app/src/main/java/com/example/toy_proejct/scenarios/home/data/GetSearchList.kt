@@ -1,4 +1,4 @@
-package com.example.toy_proejct.api.getSearchList
+package com.example.toy_proejct.scenarios.home.data
 
 @kotlinx.serialization.Serializable
 data class GetSearchList(

@@ -12,32 +12,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import coil.compose.AsyncImage
-import com.example.toy_proejct.api.getDetail.DetailDto
-import com.example.toy_proejct.api.getDetail.MallDtoInfo
-import com.example.toy_proejct.api.getSearchList.ProductListDto
-import com.example.toy_proejct.scenarios.detail.DetailActivity
-import com.example.toy_proejct.scenarios.home.ItemRow
+import com.example.toy_proejct.scenarios.detail.data.DetailDto
+import com.example.toy_proejct.scenarios.detail.data.MallDtoInfo
 import com.example.toy_proejct.ui.component.CommonComponent
 import kotlinx.coroutines.launch
 
