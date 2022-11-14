@@ -26,9 +26,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.toy_proejct.scenarios.home.data.ProductListDto
+import com.example.toy_proejct.data.product.list.ProductListDto
 import com.example.toy_proejct.scenarios.detail.DetailActivity
 import com.example.toy_proejct.ui.component.CommonComponent
+import com.example.toy_proejct.utils.UnitHelper
 import kotlinx.coroutines.launch
 
 
@@ -100,7 +101,7 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
                     style = MaterialTheme.typography.h6
                 )
                 Text(
-                    text = "${item.minimumPrice} 원",
+                    text = UnitHelper.getStringFromMoneyInteger(item.minimumPrice),
                     style = MaterialTheme.typography.caption
                 )
             }
