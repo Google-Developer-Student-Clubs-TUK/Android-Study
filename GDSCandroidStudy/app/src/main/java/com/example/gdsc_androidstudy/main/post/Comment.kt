@@ -34,11 +34,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
 import com.example.gdsc_androidstudy.data.CommentData
+import com.example.gdsc_androidstudy.data.CommentResponse
 import com.example.gdsc_androidstudy.main.post.PostViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun CommentScreen(postId: Int, viewModel: PostViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), navHostController: NavHostController) {
+    LaunchedEffect(Unit) {
+        viewModel.getComment(postId)
+    }
     Scaffold(topBar = {
         TopAppBar(
             title = {
@@ -57,11 +61,13 @@ fun CommentScreen(postId: Int, viewModel: PostViewModel = androidx.lifecycle.vie
             backgroundColor = Color.Transparent,
             elevation = 0.dp
         )
-    }) {
+    }) { it ->
         Column(modifier = Modifier.padding(it)) {
             LazyColumn(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                items(3) {
-                    CommentItem()
+                viewModel.comments.value?.let { comments ->
+                    items(comments) { comment ->
+                        CommentItem(comment)
+                    }
                 }
             }
             SendComment(viewModel = viewModel, postId = postId)
@@ -70,7 +76,7 @@ fun CommentScreen(postId: Int, viewModel: PostViewModel = androidx.lifecycle.vie
 }
 
 @Composable
-fun CommentItem() {
+fun CommentItem(comment: CommentResponse) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
         Image(
             painter = painterResource(id = R.drawable.profile),
@@ -88,10 +94,10 @@ fun CommentItem() {
                 buildAnnotatedString {
                     withStyle(style = ParagraphStyle(lineHeight = 23.sp)) {
                         withStyle(style = SpanStyle(fontSize = 13.sp, fontWeight = FontWeight.SemiBold)) {
-                            append("zinkikixx ")
+                            append(comment.userId)
                         }
                         withStyle(style = SpanStyle(fontSize = 11.sp)) {
-                            append("안뇽안뇽어ㄷ쩌구~~~~~~~~~~헬로안뇽안뇽어ㄷ쩌구안뇽안뇽어ㄷ쩌구안뇽안뇽어ㄷ쩌구~")
+                            append(comment.content)
                         }
                     }
                 }
@@ -134,8 +140,8 @@ fun SendComment(viewModel: PostViewModel, postId: Int, modifier: Modifier = Modi
                 onSend = {
                     // 메세지 보내기
                     if (sendMessage.isNotEmpty()) {
-                        val now = System.currentTimeMillis()
-                        val message = CommentData(postId, sendMessage, userId!!, now)
+                        val message = CommentData(postId, sendMessage, userId!!)
+                        viewModel.entryComment(message)
                         sendMessage = ""
                     }
                 }
@@ -145,8 +151,8 @@ fun SendComment(viewModel: PostViewModel, postId: Int, modifier: Modifier = Modi
             onClick = {
                 // 메세지 보내기
                 if (sendMessage.isNotEmpty()) {
-                    val now = System.currentTimeMillis()
-                    val message = CommentData(postId, sendMessage, userId!!, now)
+                    val message = CommentData(postId, sendMessage, userId!!)
+                    viewModel.entryComment(message)
                     sendMessage = ""
                 }
             },

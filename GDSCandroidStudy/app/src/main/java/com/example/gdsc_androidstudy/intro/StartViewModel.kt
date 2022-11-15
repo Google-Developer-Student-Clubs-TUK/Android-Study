@@ -1,10 +1,12 @@
 package com.example.gdsc_androidstudy.intro // ktlint-disable package-name
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gdsc_androidstudy.data.AppPref
 import com.example.gdsc_androidstudy.data.User
+import com.example.gdsc_androidstudy.data.UserRequest
+import com.example.gdsc_androidstudy.network.DBRepository
 import com.example.gdsc_androidstudy.utilites.App
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -30,6 +32,7 @@ class StartViewModel : ViewModel() {
     val loginState = _loginState.asStateFlow()
 
     private val hasId = MutableStateFlow(false)
+    private val dbRepository = DBRepository()
 
     init {
         viewModelScope.launch {
@@ -52,14 +55,14 @@ class StartViewModel : ViewModel() {
         // sharedPreference에 저장된 데이터가 있으면 가입된 유저라고 간주
         viewModelScope.launch {
             if (isLogin) {
-                hasId.value = App.appPref.getUserPref()
+                hasId.value = App.appPref.getUserPref() == null
                 if (hasId.value) {
                     _loginState.emit(LoginState.CompletedLogin)
                 } else {
                     hasAccount()?.let { user ->
                         App.appPref.setUserPref(user)
                         _loginState.emit(LoginState.CompletedLogin)
-                    }?: kotlin.run {
+                    } ?: kotlin.run {
                         _loginState.emit(LoginState.RequireRegister)
                     }
                 }
@@ -74,19 +77,24 @@ class StartViewModel : ViewModel() {
         return true
     }
 
-    suspend fun hasAccount(): User? {
-        return null
+    private suspend fun hasAccount(): User? {
+        return kotlin.runCatching {
+            dbRepository.getProfile(auth.currentUser!!.uid)
+        }.getOrNull()
     }
 
     fun joinAccount(nickname: String) {
         auth.currentUser?.let {
-            val user = User(it.uid, nickname, email = it.email!!, profileImg = null)
-            App.appPref.setUserPref(user)
-            // 디비 가입
-        }
-        if (true) {
+            val userReq = UserRequest(it.uid, nickname, email = it.email!!, profileImg = null)
             viewModelScope.launch {
-                _loginState.emit(LoginState.CompletedLogin)
+                kotlin.runCatching {
+                    dbRepository.joinUser(userReq)
+                }.onSuccess { user ->
+                    App.appPref.setUserPref(user)
+                    _loginState.emit(LoginState.CompletedLogin)
+                }.onFailure {
+                    Log.d("zinkiki", it.message.toString())
+                }
             }
         }
     }

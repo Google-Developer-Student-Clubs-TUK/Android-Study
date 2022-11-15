@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
-import com.example.gdsc_androidstudy.data.PostData
+import com.example.gdsc_androidstudy.data.PostResponse
 
 @Composable
-fun PostItem(postData: PostData, navHostController: NavHostController) {
+fun PostItem(postData: PostResponse, navHostController: NavHostController) {
     val scrollState = rememberScrollState()
     Column() {
         DrawLine()

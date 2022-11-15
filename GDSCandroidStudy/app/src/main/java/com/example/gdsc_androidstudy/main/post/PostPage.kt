@@ -22,7 +22,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
-import com.example.gdsc_androidstudy.data.PostData
+import com.example.gdsc_androidstudy.data.PostResponse
 
 @Composable
 fun PostPage(navHostController: NavHostController) {
@@ -30,10 +30,6 @@ fun PostPage(navHostController: NavHostController) {
     val viewModel = remember {
         PostViewModel()
     }
-    LaunchedEffect(Unit) {
-        viewModel.getPostData()
-    }
-
     buildAnnotatedString { }
     Scaffold(
         scaffoldState = scaffoldState,
@@ -87,11 +83,13 @@ fun PostPage(navHostController: NavHostController) {
 }
 
 @Composable
-fun PostList(posts: State<List<PostData>>, navHostController: NavHostController) {
+fun PostList(posts: State<List<PostResponse>?>, navHostController: NavHostController) {
     val scope = LazyListState()
-    LazyColumn(state = scope, modifier = Modifier.padding(bottom = 45.dp)) {
-        items(posts.value) { item ->
-            PostItem(postData = item, navHostController = navHostController)
+    posts.value?.let {
+        LazyColumn(state = scope, modifier = Modifier.padding(bottom = 45.dp)) {
+            items(it) { item ->
+                PostItem(postData = item, navHostController = navHostController)
+            }
         }
     }
 }

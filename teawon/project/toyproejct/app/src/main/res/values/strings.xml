@@ -1,5 +1,0 @@
-<resources>
-    <string name="app_name">toy-proejct</string>
-    <string name="title_activity_home">HomeActivity</string>
-    <string name="title_activity_detail">DetailActivity</string>
-</resources>

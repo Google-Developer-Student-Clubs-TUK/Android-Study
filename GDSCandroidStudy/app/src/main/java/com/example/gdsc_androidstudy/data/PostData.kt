@@ -1,9 +1,20 @@
-package com.example.gdsc_androidstudy.data // ktlint-disable package-name
+package com.example.gdsc_androidstudy.data
 
-data class PostData(
+import kotlinx.serialization.Serializable
+
+// ktlint-disable package-name
+
+@Serializable
+data class PostRequest(
     val userId: String,
+    val content: String
+)
+
+@Serializable
+data class PostResponse(
+    val userId: String,
+    val postId: Int,
     val userProfileImage: String,
     val postContent: String,
-    val postImage: List<String>,
-    val postDate: String
+    val createdAt: String
 )

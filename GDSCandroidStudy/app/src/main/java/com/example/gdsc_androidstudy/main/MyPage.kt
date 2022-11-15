@@ -10,9 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,8 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
-import com.example.gdsc_androidstudy.data.PostData
+import com.example.gdsc_androidstudy.data.PostResponse
+import com.example.gdsc_androidstudy.data.User
 import com.example.gdsc_androidstudy.main.post.PostViewModel
+import com.example.gdsc_androidstudy.utilites.App
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -34,11 +34,20 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MyPageScreen(postViewModel: PostViewModel = viewModel(), navHostController: NavHostController) {
+fun MyPageScreen(viewModel: PostViewModel = viewModel(), navHostController: NavHostController) {
+    val user: User? by remember {
+        mutableStateOf(App.appPref.getUserPref())
+    }
+    LaunchedEffect(Unit) {
+        if (user != null) {
+            viewModel.getUserProfile(user!!.userId)
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "zinkikixx__") },
+                title = { Text(text = user?.nickname ?: "") },
                 actions = {
                     Row() {
                         IconButton(onClick = { /*TODO*/ }) {
@@ -64,48 +73,68 @@ fun MyPageScreen(postViewModel: PostViewModel = viewModel(), navHostController: 
         }
     ) {
         Column(modifier = Modifier.padding(it).fillMaxSize()) {
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
-                Row(modifier = Modifier.fillMaxWidth().height(100.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        Image(
-                            painter = painterResource(id = R.drawable.profile),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "userImage",
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(
-                                    100.dp
-                                )
-                                .aspectRatio(1f)
-                        )
+            if (user != null) {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().height(100.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = painterResource(id = R.drawable.profile),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "userImage",
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .size(
+                                        100.dp
+                                    )
+                                    .aspectRatio(1f)
+                            )
+                        }
+                        Row(modifier = Modifier.weight(2f)) {
+                            Column(
+                                Modifier.weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = "20", fontWeight = FontWeight.SemiBold)
+                                Text(text = "게시물")
+                            }
+                            Column(
+                                Modifier.weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = "205", fontWeight = FontWeight.SemiBold)
+                                Text(text = "팔로워")
+                            }
+                            Column(
+                                Modifier.weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = "129", fontWeight = FontWeight.SemiBold)
+                                Text(text = "팔로잉")
+                            }
+                        }
                     }
-                    Row(modifier = Modifier.weight(2f)) {
-                        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "20", fontWeight = FontWeight.SemiBold)
-                            Text(text = "게시물")
+                    Row(modifier = Modifier.padding(vertical = 10.dp)) {
+                        Button(
+                            onClick = { /*TODO*/ },
+                            modifier = Modifier.weight(1f).height(30.dp),
+                            colors = ButtonDefaults.buttonColors(Color.LightGray)
+                        ) {
+                            Text(text = "프로필 편집", fontSize = 11.sp)
                         }
-                        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "205", fontWeight = FontWeight.SemiBold)
-                            Text(text = "팔로워")
-                        }
-                        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "129", fontWeight = FontWeight.SemiBold)
-                            Text(text = "팔로잉")
+                        Spacer(modifier = Modifier.width(7.dp))
+                        IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(30.dp)) {
+                            Icon(imageVector = Icons.Filled.Person, contentDescription = "")
+                            //
                         }
                     }
                 }
-                Row(modifier = Modifier.padding(vertical = 10.dp)) {
-                    Button(onClick = { /*TODO*/ }, modifier = Modifier.weight(1f).height(30.dp), colors = ButtonDefaults.buttonColors(Color.LightGray)) {
-                        Text(text = "프로필 편집", fontSize = 11.sp)
-                    }
-                    Spacer(modifier = Modifier.width(7.dp))
-                    IconButton(onClick = { /*TODO*/ }, modifier = Modifier.size(30.dp)) {
-                        Icon(imageVector = Icons.Filled.Person, contentDescription = "")
-//
-                    }
-                }
+                Tab(viewModel, navHostController)
+            }else{
+                Text("데이터 불러오기 실패")
             }
-            Tab(postViewModel, navHostController)
         }
     }
 }
@@ -180,10 +209,12 @@ fun Tab(postViewModel: PostViewModel, navHostController: NavHostController) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MyPostList(photos: List<PostData>) {
-    LazyVerticalGrid(cells = GridCells.Fixed(3)) {
-        items(photos) { photo ->
-            Image(painter = painterResource(id = R.drawable.post), contentDescription = "contentImage", modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop)
+fun MyPostList(photos: List<PostResponse>?) {
+    photos?.let {
+        LazyVerticalGrid(cells = GridCells.Fixed(3)) {
+            items(photos) { photo ->
+                Image(painter = painterResource(id = R.drawable.post), contentDescription = "contentImage", modifier = Modifier.fillMaxWidth().aspectRatio(1f), contentScale = ContentScale.Crop)
+            }
         }
     }
 }
