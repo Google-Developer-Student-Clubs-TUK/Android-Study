@@ -3,6 +3,8 @@ package com.example.toy_proejct.scenarios.home
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.toy_proejct.LogHelper
 import com.example.toy_proejct.di.DataModule
@@ -33,6 +35,19 @@ class HomeViewModel(private val productRepository: ProductRepository = DataModul
     fun updateSearchTextState(newValue: String) { //검색 텍스트 값 변경 함수
         _searchTextState.value = newValue
     }
+
+    private var lastScrollIndex = 0
+    private val _scrollUp = MutableLiveData(false)
+    val scrollUp: LiveData<Boolean>
+        get() = _scrollUp
+
+    fun updateScrollPosition(newScrollIndex: Int) {
+        if (newScrollIndex == lastScrollIndex) return
+
+        _scrollUp.value = newScrollIndex > lastScrollIndex
+        lastScrollIndex = newScrollIndex
+    }
+
 
     suspend fun searchApi(keyword:String) {
         _isLoading.value = true

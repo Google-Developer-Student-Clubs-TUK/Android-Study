@@ -1,10 +1,13 @@
 package com.example.toy_proejct.scenarios.home
 
 import android.content.Intent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,14 +15,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,10 +36,14 @@ import com.example.toy_proejct.scenarios.detail.DetailActivity
 import com.example.toy_proejct.ui.component.CommonComponent
 import com.example.toy_proejct.utils.UnitHelper
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonNull.content
 
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
+    val scrollState = rememberLazyListState()
+    val scrollUpState = viewModel.scrollUp.value
+
     Search(viewModel) {
         Column(modifier = Modifier.fillMaxSize()) {
             ItemContent(modifier = Modifier.weight(1f), itemList = viewModel.itemList.value)
@@ -64,7 +71,7 @@ fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>) {
 fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
     val context = LocalContext.current
 
-        Card(
+    Card(
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
@@ -98,8 +105,10 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
                     contentDescription = "image"
                 )
             }
-            Column(modifier = Modifier.fillMaxSize(),    verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = item.title,
                     style = MaterialTheme.typography.h5,
@@ -116,7 +125,6 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
         }
 
 
-
     }
 
 
@@ -131,6 +139,11 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 
 
     val coroutineScope = rememberCoroutineScope() //코루틴 생성
+
+    val scrollState = rememberLazyListState()
+    val scrollUpState = viewModel.scrollUp.observeAsState()
+
+    viewModel.updateScrollPosition(scrollState.firstVisibleItemIndex)
 
 
     Scaffold(
@@ -151,7 +164,8 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
                 onSearchTriggered = {
                     viewModel.updateSearchWidgetState(newState = true) //Search영역이 클릭되면 Search영역 활성화
                     viewModel.updateSearchTextState("")
-                }
+                },
+                scrollUpState = scrollUpState
             )
         }
     ) {
@@ -164,6 +178,7 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 }
 
 
+
 @Composable
 fun SearchBar(
     searchWidgetState: Boolean,
@@ -171,8 +186,11 @@ fun SearchBar(
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit,
-    onSearchTriggered: () -> Unit
-) {
+    onSearchTriggered: () -> Unit,
+    scrollUpState : State<Boolean?>
+
+    ) {
+
     when (searchWidgetState) {
         false -> {
             DefaultAppBar(
@@ -185,7 +203,8 @@ fun SearchBar(
                 text = searchTextState,
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked,
-                onSearchClicked = onSearchClicked
+                onSearchClicked = onSearchClicked,
+                scrollUpState = scrollUpState
             )
         }
     }
@@ -226,17 +245,23 @@ fun DefaultAppBar(onSearchClicked: () -> Unit, text: String) {
     )
 }
 
+
 @Composable
 fun SearchAppBar(
     text: String,
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit,
+    scrollUpState: State<Boolean?>,
 ) {
+
+    val position by animateFloatAsState(if (scrollUpState.value == true) -150f else 0f)
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .graphicsLayer { translationY = (position) },
         elevation = AppBarDefaults.TopAppBarElevation,
         color = MaterialTheme.colors.primary
     ) {
@@ -299,5 +324,9 @@ fun SearchAppBar(
             ))
     }
 }
+
+
+
+
 
 
