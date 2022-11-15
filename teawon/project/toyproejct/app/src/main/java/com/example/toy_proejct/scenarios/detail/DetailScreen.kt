@@ -23,10 +23,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.toy_proejct.scenarios.detail.data.DetailDto
-import com.example.toy_proejct.scenarios.detail.data.MallDtoInfo
+import com.example.toy_proejct.data.product.detail.DetailDto
+import com.example.toy_proejct.data.product.detail.MallDtoInfo
 import com.example.toy_proejct.ui.component.CommonComponent
+import com.example.toy_proejct.utils.UnitHelper
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
 fun DetailScreen(viewModel: DetailViewModel, url: String, back:() -> Unit) {
@@ -117,7 +119,7 @@ fun MallList(item: MallDtoInfo) { //각 상품에 대한 설명
                         style = MaterialTheme.typography.h6
                     )
                     Text(
-                        text = " ${item.price}원",
+                        text = UnitHelper.getStringFromMoneyInteger(item.price),
                         style = MaterialTheme.typography.h6,
                         color = Color.Blue
 

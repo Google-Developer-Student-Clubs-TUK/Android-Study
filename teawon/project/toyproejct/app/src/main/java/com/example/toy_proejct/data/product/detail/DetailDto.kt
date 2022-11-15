@@ -1,4 +1,4 @@
-package com.example.toy_proejct.scenarios.detail.data
+package com.example.toy_proejct.data.product.detail
 
 @kotlinx.serialization.Serializable
 data class DetailDto(

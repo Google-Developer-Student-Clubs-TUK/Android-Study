@@ -5,25 +5,15 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.toy_proejct.LogHelper
-import com.example.toy_proejct.scenarios.home.data.GetSearchList
-import com.example.toy_proejct.scenarios.home.data.ProductListDto
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.request.*
+import com.example.toy_proejct.di.DataModule
+import com.example.toy_proejct.domain.product.ProductRepository
+import com.example.toy_proejct.data.product.list.ProductListDto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class HomeViewModel : ViewModel() {
-
-
-
-
-
+class HomeViewModel(private val productRepository: ProductRepository = DataModule.productRepository) : ViewModel() {
     private  val _isLoading: MutableState<Boolean> = mutableStateOf(value = false)
     val isLoading : State<Boolean> = _isLoading
-
 
     private val _searchWidgetState: MutableState<Boolean> = //검색창 활성화 여부
         mutableStateOf(value = false)
@@ -44,40 +34,20 @@ class HomeViewModel : ViewModel() {
         _searchTextState.value = newValue
     }
 
-
-
-
-
-
-    private val client: HttpClient = HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(
-                kotlinx.serialization.json.Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                }
-            )
-        }
-    }
-
-
     suspend fun searchApi(keyword:String) {
         _isLoading.value = true
         withContext(Dispatchers.IO) {
              kotlin.runCatching {
-                client.get<GetSearchList>("http://3.39.75.19:8080/api/v1/crawler/search/products?word=$keyword")
+                productRepository.fetchProductList(keyword)
             }.onSuccess {
                  _isLoading.value = false
-                _itemList.value = it.productListDtoList //성공시 데이터 갱신
-                LogHelper.print("succses: ${it.productListDtoList.size}")
-            }.onFailure {
-                LogHelper.print("Failure: $it")
+                 _itemList.value = it.productListDtoList //성공시 데이터 갱신
+                 LogHelper.print("succses: ${it.productListDtoList.size}")
+             }.onFailure {
+                 LogHelper.print("Failure: $it")
              }
         }
     }
-
-
 }
 
 
