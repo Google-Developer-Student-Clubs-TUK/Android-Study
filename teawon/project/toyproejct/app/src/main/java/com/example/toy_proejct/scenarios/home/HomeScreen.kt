@@ -194,12 +194,16 @@ fun SearchBar(
 
     ) {
 
+    val position by animateFloatAsState(if (scrollUpState.value == true) -150f else 0f)
+    val height = if(scrollUpState.value == true) 0 else 50
+
     when (searchWidgetState) {
         false -> {
             DefaultAppBar(
                 onSearchClicked = onSearchTriggered, //영역이 비활성화라면 초기에 보여줄 컴포넌트로 보여주기
                 text = searchTextState,
-                scrollUpState = scrollUpState
+                position = position,
+                height = height
             )
         }
         true -> {
@@ -208,20 +212,20 @@ fun SearchBar(
                 onTextChange = onTextChange,
                 onCloseClicked = onCloseClicked,
                 onSearchClicked = onSearchClicked,
-                scrollUpState = scrollUpState
+                position = position,
+                height = height
             )
         }
     }
 }
 
 @Composable
-fun DefaultAppBar(onSearchClicked: () -> Unit, text: String, scrollUpState: State<Boolean?>) {
-    val position by animateFloatAsState(if (scrollUpState.value == true) -150f else 0f)
+fun DefaultAppBar(onSearchClicked: () -> Unit, text: String, position:Float , height: Int) {
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(height.dp)
             .graphicsLayer { translationY = (position) },
         elevation = AppBarDefaults.TopAppBarElevation,
         color = MaterialTheme.colors.primary
@@ -267,16 +271,16 @@ fun SearchAppBar(
     onTextChange: (String) -> Unit,
     onCloseClicked: () -> Unit,
     onSearchClicked: (String) -> Unit,
-    scrollUpState: State<Boolean?>,
+    position:Float ,
+    height: Int
 ) {
 
-    val position by animateFloatAsState(if (scrollUpState.value == true) -150f else 0f)
-    LogHelper.print("자고싶어요: $scrollUpState")
+
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(height.dp)
             .graphicsLayer { translationY = (position) },
         elevation = AppBarDefaults.TopAppBarElevation,
         color = MaterialTheme.colors.primary
