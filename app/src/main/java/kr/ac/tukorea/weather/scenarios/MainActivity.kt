@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity(), LocationListener {
         when (requestCode) {
             1 -> {
                 if (fLocationPermission == PackageManager.PERMISSION_GRANTED && cLocationPermission == PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "위치 권한을 이미 설정했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "위치 권한 접근이 허용되었습니다.", Toast.LENGTH_SHORT).show()
                     getCurrentLocation()
                 } else Toast.makeText(
                     this,
