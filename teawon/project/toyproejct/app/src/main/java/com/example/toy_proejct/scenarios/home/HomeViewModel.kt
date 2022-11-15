@@ -43,7 +43,8 @@ class HomeViewModel(private val productRepository: ProductRepository = DataModul
 
     fun updateScrollPosition(newScrollIndex: Int) {
         if (newScrollIndex == lastScrollIndex) return
-
+        LogHelper.print("newScrollIndex: $newScrollIndex")
+        //LogHelper.print("newScrollIndex: $scrollUp.observeAsState()")
         _scrollUp.value = newScrollIndex > lastScrollIndex
         lastScrollIndex = newScrollIndex
     }

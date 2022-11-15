@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.toy_proejct.LogHelper
 import com.example.toy_proejct.data.product.list.ProductListDto
 import com.example.toy_proejct.scenarios.detail.DetailActivity
 import com.example.toy_proejct.ui.component.CommonComponent
@@ -41,12 +43,14 @@ import kotlinx.serialization.json.JsonNull.content
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    val scrollState = rememberLazyListState()
-    val scrollUpState = viewModel.scrollUp.value
 
-    Search(viewModel) {
+    val scrollState = rememberLazyListState()
+    val scrollUpState = viewModel.scrollUp.observeAsState()
+    viewModel.updateScrollPosition(scrollState.firstVisibleItemIndex)
+
+    Search(viewModel,scrollUpState) {
         Column(modifier = Modifier.fillMaxSize()) {
-            ItemContent(modifier = Modifier.weight(1f), itemList = viewModel.itemList.value)
+            ItemContent(modifier = Modifier.weight(1f), itemList = viewModel.itemList.value, scrollState=scrollState)
             CommonComponent.ButtomNavbar()
         }
     }
@@ -54,12 +58,12 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
 
 @Composable
-fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>) {
+fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>, scrollState:LazyListState) {
     Column(
         modifier = modifier
             .padding(12.dp)
     ) {
-        LazyColumn {
+        LazyColumn(state = scrollState) {
             items(items = itemList) {
                 ItemRow(item = it)
             }
@@ -132,7 +136,8 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
 
 
 @Composable
-private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
+private fun Search(viewModel: HomeViewModel, scrollUpState:
+State<Boolean?>, content: @Composable () -> Unit ) {
     val searchWidgetState by viewModel.searchWidgetState //활성화 여부
     val searchTextState by viewModel.searchTextState // 검색 변수
     val isLoading by viewModel.isLoading //로딩 함수
@@ -140,10 +145,8 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 
     val coroutineScope = rememberCoroutineScope() //코루틴 생성
 
-    val scrollState = rememberLazyListState()
-    val scrollUpState = viewModel.scrollUp.observeAsState()
 
-    viewModel.updateScrollPosition(scrollState.firstVisibleItemIndex)
+
 
 
     Scaffold(
@@ -195,7 +198,8 @@ fun SearchBar(
         false -> {
             DefaultAppBar(
                 onSearchClicked = onSearchTriggered, //영역이 비활성화라면 초기에 보여줄 컴포넌트로 보여주기
-                text = searchTextState
+                text = searchTextState,
+                scrollUpState = scrollUpState
             )
         }
         true -> {
@@ -211,38 +215,49 @@ fun SearchBar(
 }
 
 @Composable
-fun DefaultAppBar(onSearchClicked: () -> Unit, text: String) {
-    TopAppBar(
-        title = {
-            if (text.isNotEmpty()) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = text,
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "상품 검색",
-                    textAlign = TextAlign.Center
-                )
+fun DefaultAppBar(onSearchClicked: () -> Unit, text: String, scrollUpState: State<Boolean?>) {
+    val position by animateFloatAsState(if (scrollUpState.value == true) -150f else 0f)
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .graphicsLayer { translationY = (position) },
+        elevation = AppBarDefaults.TopAppBarElevation,
+        color = MaterialTheme.colors.primary
+    ) {
+        TopAppBar(
+            title = {
+                if (text.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = text,
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "상품 검색",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = { onSearchClicked() } //버튼 클릭시 Search영역 활성화
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Search Icon",
+                        tint = Color.White
+                    )
+                }
+            },
+            navigationIcon = {
+                Spacer(modifier = Modifier.size(20.dp))
             }
-        },
-        actions = {
-            IconButton(
-                onClick = { onSearchClicked() } //버튼 클릭시 Search영역 활성화
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Search Icon",
-                    tint = Color.White
-                )
-            }
-        },
-        navigationIcon = {
-            Spacer(modifier = Modifier.size(20.dp))
-        }
-    )
+        )
+    }
 }
 
 
@@ -256,6 +271,7 @@ fun SearchAppBar(
 ) {
 
     val position by animateFloatAsState(if (scrollUpState.value == true) -150f else 0f)
+    LogHelper.print("자고싶어요: $scrollUpState")
 
     Surface(
         modifier = Modifier
