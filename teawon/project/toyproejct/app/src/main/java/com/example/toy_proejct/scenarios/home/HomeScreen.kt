@@ -22,8 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.toy_proejct.data.product.list.ProductListDto
@@ -31,7 +33,6 @@ import com.example.toy_proejct.scenarios.detail.DetailActivity
 import com.example.toy_proejct.ui.component.CommonComponent
 import com.example.toy_proejct.utils.UnitHelper
 import kotlinx.coroutines.launch
-
 
 
 @Composable
@@ -46,11 +47,13 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
 
 @Composable
-fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>){
-    Column(modifier = modifier
-        .padding(12.dp)) {
-        LazyColumn{
-            items(items = itemList){
+fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>) {
+    Column(
+        modifier = modifier
+            .padding(12.dp)
+    ) {
+        LazyColumn {
+            items(items = itemList) {
                 ItemRow(item = it)
             }
         }
@@ -61,11 +64,11 @@ fun ItemContent(modifier: Modifier = Modifier, itemList: List<ProductListDto>){
 fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
     val context = LocalContext.current
 
-    Card(
+        Card(
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
-            .height(160.dp)
+            .height(320.dp)
             .clickable {
                 context.startActivity(
                     Intent(context, DetailActivity::class.java).apply {
@@ -77,40 +80,47 @@ fun ItemRow(item: ProductListDto) { //각 상품에 대한 설명
         shape = RoundedCornerShape(corner = CornerSize(14.dp)),
         elevation = 5.dp
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Bottom
         ) {
-            Surface(
+            Box(
                 modifier = Modifier
-                    .padding(12.dp)
-                    .size(100.dp),
-                shape = RectangleShape,
-                elevation = 4.dp
+                    .fillMaxWidth()
+                    .height(230.dp)
             ) {
-
                 AsyncImage(
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     model = item.imageUrl,
                     contentDescription = "image"
                 )
-
             }
-            Column(modifier = Modifier.padding(4.dp).fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxSize(),    verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = item.title,
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.h5,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
                 Text(
                     text = UnitHelper.getStringFromMoneyInteger(item.minimumPrice),
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.h6
                 )
             }
 
+
         }
+
+
+
     }
+
+
 }
-
-
 
 
 @Composable
@@ -118,8 +128,6 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
     val searchWidgetState by viewModel.searchWidgetState //활성화 여부
     val searchTextState by viewModel.searchTextState // 검색 변수
     val isLoading by viewModel.isLoading //로딩 함수
-
-
 
 
     val coroutineScope = rememberCoroutineScope() //코루틴 생성
@@ -138,7 +146,7 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
 
                 },
                 onSearchClicked = {
-                    coroutineScope.launch{viewModel.searchApi(it)} //코루틴에서 Ktor-api호출
+                    coroutineScope.launch { viewModel.searchApi(it) } //코루틴에서 Ktor-api호출
                 },
                 onSearchTriggered = {
                     viewModel.updateSearchWidgetState(newState = true) //Search영역이 클릭되면 Search영역 활성화
@@ -147,10 +155,9 @@ private fun Search(viewModel: HomeViewModel, content: @Composable () -> Unit) {
             )
         }
     ) {
-        if(isLoading){
+        if (isLoading) {
             CommonComponent.LoadingSpinner()
-        }
-        else{
+        } else {
             content()
         }
     }
@@ -167,7 +174,7 @@ fun SearchBar(
     onSearchTriggered: () -> Unit
 ) {
     when (searchWidgetState) {
-       false -> {
+        false -> {
             DefaultAppBar(
                 onSearchClicked = onSearchTriggered, //영역이 비활성화라면 초기에 보여줄 컴포넌트로 보여주기
                 text = searchTextState
@@ -185,20 +192,19 @@ fun SearchBar(
 }
 
 @Composable
-fun DefaultAppBar(onSearchClicked: () -> Unit , text: String) {
+fun DefaultAppBar(onSearchClicked: () -> Unit, text: String) {
     TopAppBar(
         title = {
-            if(text.isNotEmpty()){
+            if (text.isNotEmpty()) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = text,
                     textAlign = TextAlign.Center
                 )
-            }
-            else{
+            } else {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text="상품 검색",
+                    text = "상품 검색",
                     textAlign = TextAlign.Center
                 )
             }
@@ -268,7 +274,7 @@ fun SearchAppBar(
             trailingIcon = {
                 IconButton(
                     onClick = {
-                            onCloseClicked() //취소 버튼 누르면 closeClick()
+                        onCloseClicked() //취소 버튼 누르면 closeClick()
                     }
                 ) {
                     Icon(
