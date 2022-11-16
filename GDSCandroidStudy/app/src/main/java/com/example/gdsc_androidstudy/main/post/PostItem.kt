@@ -38,7 +38,6 @@ import com.example.gdsc_androidstudy.data.PostResponse
 
 @Composable
 fun PostItem(postData: PostResponse, navHostController: NavHostController) {
-    val scrollState = rememberScrollState()
     Column() {
         DrawLine()
         ConstraintLayout(modifier = Modifier.fillMaxWidth().padding(13.dp)) {
@@ -48,7 +47,10 @@ fun PostItem(postData: PostResponse, navHostController: NavHostController) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                },
+                }
+                    .clickable {
+                        navHostController.navigate("MYPAGE/${postData.userId}")
+                    },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
@@ -62,7 +64,7 @@ fun PostItem(postData: PostResponse, navHostController: NavHostController) {
                         )
                 )
                 Spacer(modifier = Modifier.width(10.dp))
-                Text(text = "zinkikixx", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = postData.nickname, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
             }
             IconButton(
                 onClick = { },
@@ -121,10 +123,10 @@ fun PostItem(postData: PostResponse, navHostController: NavHostController) {
                 buildAnnotatedString {
                     withStyle(style = ParagraphStyle(lineHeight = 23.sp)) {
                         withStyle(style = SpanStyle(fontSize = 15.sp, fontWeight = FontWeight.SemiBold)) {
-                            append("zinkikixx ")
+                            append(postData.nickname)
                         }
                         withStyle(style = SpanStyle(fontSize = 15.sp)) {
-                            append("안뇽안뇽어ㄷ쩌구~~~~~~~~~~헬로안뇽안뇽어ㄷ쩌구안뇽안뇽어ㄷ쩌구안뇽안뇽어ㄷ쩌구~")
+                            append(postData.postContent)
                         }
                     }
                 }

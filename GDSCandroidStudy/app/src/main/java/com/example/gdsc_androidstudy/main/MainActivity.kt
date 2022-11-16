@@ -12,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.gdsc_androidstudy.main.CommentScreen
 import com.example.gdsc_androidstudy.main.MyPageScreen
 import com.example.gdsc_androidstudy.main.post.PostPage
@@ -53,8 +55,13 @@ fun Screen(startRoute: String, navController: NavHostController, modifier: Modif
         composable(BottomNavItem.PostPage.route) {
             PostPage(navController)
         }
-        composable(BottomNavItem.MyPage.route) {
-            MyPageScreen(navHostController = navController)
+        composable(
+            "${BottomNavItem.MyPage.route}/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType }
+            )
+        ) {
+            MyPageScreen(navHostController = navController, userId = it.arguments?.getString("userId") ?: "")
         }
         composable(BottomNavItem.SearchPage.route) {
             PostPage(navController)

@@ -14,6 +14,7 @@ data class PostRequest(
 data class PostResponse(
     val userId: String,
     val postId: Int,
+    val nickname: String,
     val userProfileImage: String,
     val postContent: String,
     val createdAt: String

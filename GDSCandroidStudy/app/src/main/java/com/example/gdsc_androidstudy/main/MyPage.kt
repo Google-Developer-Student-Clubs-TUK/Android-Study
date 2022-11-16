@@ -24,9 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.gdsc_androidstudy.R
 import com.example.gdsc_androidstudy.data.PostResponse
-import com.example.gdsc_androidstudy.data.User
 import com.example.gdsc_androidstudy.main.post.PostViewModel
-import com.example.gdsc_androidstudy.utilites.App
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -34,20 +32,16 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MyPageScreen(viewModel: PostViewModel = viewModel(), navHostController: NavHostController) {
-    val user: User? by remember {
-        mutableStateOf(App.appPref.getUserPref())
-    }
+fun MyPageScreen(userId: String, viewModel: PostViewModel = viewModel(), navHostController: NavHostController) {
     LaunchedEffect(Unit) {
-        if (user != null) {
-            viewModel.getUserProfile(user!!.userId)
-        }
+        viewModel.getUserProfile(userId)
     }
+    val user = viewModel.user.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = user?.nickname ?: "") },
+                title = { Text(text = user.value!!.nickname) },
                 actions = {
                     Row() {
                         IconButton(onClick = { /*TODO*/ }) {
@@ -73,7 +67,7 @@ fun MyPageScreen(viewModel: PostViewModel = viewModel(), navHostController: NavH
         }
     ) {
         Column(modifier = Modifier.padding(it).fillMaxSize()) {
-            if (user != null) {
+            if (user.value != null) {
                 Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth().height(100.dp),
